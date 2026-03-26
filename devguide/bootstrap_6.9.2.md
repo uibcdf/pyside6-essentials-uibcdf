@@ -5,8 +5,8 @@
 This repo currently tracks the first Linux/Python 3.13 experimental UIBCDF line
 for `PySide6_Essentials` version `6.9.2`.
 
-The repo is still at scaffold stage. The source import and recipe refinement are
-still pending, but the local rules for doing them are recorded here.
+The repo is no longer only a scaffold. It now contains a first manifest-driven
+recipe attempt and a vendored upstream subset for the Essentials line.
 
 ## Why This Repo Exists
 
@@ -100,3 +100,36 @@ And is itself a prerequisite for:
 - do not mix `Essentials` payloads across family versions
 - keep this repo aligned with `shiboken6-uibcdf` and `pyside6-addons-uibcdf`
 - keep this note updated whenever the source extraction rule changes
+
+Current upstream subset staged in this repo:
+
+- root build files from `sources/pyside6`
+- `cmake`
+- `libpyside`
+- `libpysideqml`
+- `libpysideremoteobjects`
+- `plugins`
+- `PySide6/glue`, `PySide6/support`, `PySide6/templates`
+- runtime-backed module dirs currently imported for the Essentials boundary:
+  - `QtConcurrent`
+  - `QtCore`
+  - `QtDBus`
+  - `QtDesigner`
+  - `QtGui`
+  - `QtHelp`
+  - `QtNetwork`
+  - `QtOpenGL`
+  - `QtOpenGLWidgets`
+  - `QtPrintSupport`
+  - `QtQml`
+  - `QtQuick`
+  - `QtQuickControls2`
+  - `QtQuickTest`
+  - `QtQuickWidgets`
+  - `QtSql`
+  - `QtSvg`
+  - `QtSvgWidgets`
+  - `QtTest`
+  - `QtUiTools`
+  - `QtWidgets`
+  - `QtXml`
