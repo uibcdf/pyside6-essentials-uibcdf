@@ -33,3 +33,25 @@ First-pass success criteria:
    - PySide6/libpyside6qml.abi3.so.6.9
    - the aligned Qt base runtime under PySide6/Qt
 3. remain explicitly experimental until the full family installs cleanly
+
+Current packaging approach:
+
+- first pass is manifest-driven rather than source-build-driven
+- the current first-pass boundary is intentionally limited to the Python/runtime
+  payload staged under `site-packages`
+- wrapper commands under `bin/` are present in the original wheel manifest but
+  are deferred until the core package boundary is proven
+- `devtools/conda-build/build.sh` copies the validated `PySide6_Essentials` boundary
+  from the known-good environment into `$SP_DIR`
+- the source environment can be overridden with:
+  - `PYSIDE6_ESSENTIALS_UIBCDF_SOURCE_PREFIX`
+
+Current known boundary caveats:
+
+- a small subset of `PySide6/support/*` references is also inconsistent in the
+  observed source environment and is likewise deferred in this first pass
+- the upstream wheel manifest includes wrapper commands under `bin/` and a few
+  `PySide6/scripts/*` references that do not map one-to-one onto the currently
+  observed source environment layout
+- the first-pass recipe therefore focuses on the core `site-packages` runtime
+  boundary needed for imports such as `PySide6.QtCore`
