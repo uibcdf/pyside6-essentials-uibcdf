@@ -17,11 +17,13 @@ Role in the family:
 
 Current source of truth:
 
-- validated environment:
+- local manifests copied into this repo:
+  - manifests/pyside6_essentials.files.txt
+  - manifests/pyside6_essentials.runtime.txt
+- first self-contained packaging boundary staged in this repo:
+  - package_boundary/site-packages
+- original validated environment used to derive that first boundary:
   /home/diego/Myopt/miniconda3/envs/molsyssuite-qt-spike
-- local manifests staged in molsysviewer:
-  - sandbox/qt_for_python_uibcdf_experiment/manifests/pyside6_essentials.files.txt
-  - sandbox/qt_for_python_uibcdf_experiment/manifests/pyside6_essentials.runtime.txt
 - upstream codebase reference:
   - ~/repos@others/pyside-setup
 
@@ -41,8 +43,8 @@ Current packaging approach:
   payload staged under `site-packages`
 - wrapper commands under `bin/` are present in the original wheel manifest but
   are deferred until the core package boundary is proven
-- `devtools/conda-build/build.sh` copies the validated `PySide6_Essentials` boundary
-  from the known-good environment into `$SP_DIR`
+- `devtools/conda-build/build.sh` copies the vendored `PySide6_Essentials`
+  boundary from `package_boundary/site-packages` into `$SP_DIR` by default
 - the source environment can be overridden with:
   - `PYSIDE6_ESSENTIALS_UIBCDF_SOURCE_PREFIX`
 

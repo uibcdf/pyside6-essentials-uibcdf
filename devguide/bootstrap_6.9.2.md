@@ -5,8 +5,11 @@
 This repo currently tracks the first Linux/Python 3.13 experimental UIBCDF line
 for `PySide6_Essentials` version `6.9.2`.
 
-The repo is no longer only a scaffold. It now contains a first manifest-driven
-recipe attempt and a vendored upstream subset for the Essentials line.
+The repo is no longer only a scaffold. It now contains:
+
+- a first manifest-driven recipe attempt
+- a vendored upstream subset for the Essentials line
+- a first self-contained packaging boundary under `package_boundary/`
 
 ## Why This Repo Exists
 
@@ -40,13 +43,15 @@ The initial boundary reading came from the validated environment:
 
 - `/home/diego/Myopt/miniconda3/envs/molsyssuite-qt-spike`
 
-Current local manifests copied into this repo should come from:
+Current local manifests copied into this repo are:
 
-- `molsysviewer/sandbox/qt_for_python_uibcdf_experiment/manifests/pyside6_essentials.files.txt`
-- `molsysviewer/sandbox/qt_for_python_uibcdf_experiment/manifests/pyside6_essentials.runtime.txt`
+- `manifests/pyside6_essentials.files.txt`
+- `manifests/pyside6_essentials.runtime.txt`
 
-At the time this note was written, those manifests have not yet been copied
-into this repo. That is one of the first next steps.
+The first self-contained packaging boundary was then copied into this repo
+under:
+
+- `package_boundary/site-packages`
 
 ## Current Packaging Reading
 
@@ -60,10 +65,13 @@ layer on top of `qt6-main` from conda-forge.
 
 ## Planned First Packaging Decision
 
-The first pass should mirror the `shiboken6-uibcdf` approach:
+The first pass mirrors the `shiboken6-uibcdf` approach:
 
 - start manifest-driven
-- copy the validated `PySide6_Essentials` boundary into `$SP_DIR`
+- copy the vendored `PySide6_Essentials` boundary from
+  `package_boundary/site-packages` into `$SP_DIR` by default
+- still allow overriding the source boundary with:
+  - `PYSIDE6_ESSENTIALS_UIBCDF_SOURCE_PREFIX`
 - use that step to prove the package boundary before attempting a more
   source-build-led recipe
 
@@ -79,13 +87,12 @@ And is itself a prerequisite for:
 
 ## First Implementation Checklist
 
-1. copy the validated manifests into `manifests/`
-2. vendor the relevant upstream code from `sources/pyside6`
-3. define the minimal boundary for the `Essentials` slice only
-4. write a manifest-driven `build.sh`
-5. add minimal file/import tests to `meta.yaml`
-6. run a temporary `site-packages` smoke check
-7. only then attempt a true `conda build`
+1. validate the repo-local boundary still matches the intended 6.9.2 slice
+2. keep the vendored upstream subset aligned with the chosen family version
+3. keep the deferred `bin/`, `PySide6/scripts/*`, and `PySide6/support/*`
+   decisions explicit until they are reintroduced deliberately
+4. run a temporary `site-packages` smoke check
+5. only then attempt a true `conda build`
 
 ## How To Open A Future 6.10.x Line
 
