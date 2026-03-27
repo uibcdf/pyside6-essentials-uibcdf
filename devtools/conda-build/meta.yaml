@@ -18,10 +18,10 @@ requirements:
 
 test:
   commands:
-    - test -f "$SP_DIR/PySide6/QtCore.abi3.so"
-    - test -f "$SP_DIR/PySide6/libpyside6.abi3.so.6.9"
-    - test -f "$SP_DIR/PySide6/Qt/lib/libQt6Core.so.6"
-    - python -c "import PySide6.QtCore; print(PySide6.QtCore.__file__)"
+    - test -f "$SP_DIR/PySide6_uibcdf/QtCore.abi3.so"
+    - test -f "$SP_DIR/PySide6_uibcdf/libpyside6.abi3.so.6.9"
+    - test -f "$SP_DIR/PySide6_uibcdf/Qt/lib/libQt6Core.so.6"
+    - python -c "import PySide6_uibcdf.QtCore; print(PySide6_uibcdf.QtCore.__file__)"
 
 about:
   summary: "Experimental UIBCDF-aligned PySide6 Essentials package for Linux/Python 3.13."

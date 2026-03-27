@@ -29,7 +29,10 @@ while IFS= read -r relpath; do
     esac
 
     src="$SOURCE_SITE_PACKAGES/$relpath"
-    dst="$SP_DIR/$relpath"
+    rewritten_relpath="$relpath"
+    rewritten_relpath="${rewritten_relpath/PySide6\//PySide6_uibcdf/}"
+    rewritten_relpath="${rewritten_relpath/pyside6_essentials-6.9.2.dist-info/pyside6_essentials_uibcdf-6.9.2.dist-info}"
+    dst="$SP_DIR/$rewritten_relpath"
 
     if [ ! -e "$src" ]; then
         case "$relpath" in
