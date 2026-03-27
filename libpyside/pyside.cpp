@@ -967,12 +967,12 @@ bool registerInternalQtConf()
         return false;
     }
 
-    PyObject *pysideModule = PyImport_ImportModule("PySide6");
+    PyObject *pysideModule = PyImport_ImportModule("PySide6_uibcdf");
     if (!pysideModule)
         return false;
 
     // Querying __file__ should be done only for modules that have finished their initialization.
-    // Thus querying for the top-level PySide6 package works for us whenever any Qt-wrapped module
+    // Thus querying for the top-level PySide6_uibcdf package works for us whenever any Qt-wrapped module
     // is loaded.
     PyObject *pysideInitFilePath = PyObject_GetAttr(pysideModule, Shiboken::PyMagicName::file());
     Py_DECREF(pysideModule);
@@ -985,7 +985,7 @@ bool registerInternalQtConf()
         return false;
 
     // pysideDir - absolute path to the directory containing the init file, which also contains
-    // the rest of the PySide6 modules.
+    // the rest of the PySide6_uibcdf modules.
     // prefixPath - absolute path to the directory containing the installed Qt (prefix).
     QDir pysideDir = QFileInfo(QDir::fromNativeSeparators(initPath)).absoluteDir();
     QString setupPrefix;

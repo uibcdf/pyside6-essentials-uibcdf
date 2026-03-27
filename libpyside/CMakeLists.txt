@@ -101,7 +101,7 @@ append_size_optimization_flags(pyside6)
 
 target_include_directories(pyside6 PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:PySide6/include>
+  $<INSTALL_INTERFACE:${BINDING_NAME}/include>
 )
 
 target_compile_definitions(pyside6 PRIVATE -DQT_LEAN_HEADERS=1 -DQT_NO_KEYWORDS=1)
@@ -146,7 +146,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pyside6.pc.in"
 include(CMakePackageConfigHelpers)
 
 # Build-tree / super project package config file.
-set(PYSIDE_PYTHONPATH "${PYTHON_SITE_PACKAGES}/PySide6")
+set(PYSIDE_PYTHONPATH "${PYTHON_SITE_PACKAGES}/${BINDING_NAME}")
 set(PYSIDE_TYPESYSTEMS "${CMAKE_INSTALL_PREFIX}/share/PySide6${pyside6_SUFFIX}/typesystems")
 set(PYSIDE_GLUE "${CMAKE_INSTALL_PREFIX}/share/PySide6${pyside6_SUFFIX}/glue")
 
@@ -191,9 +191,9 @@ set_target_properties(pyside6 PROPERTIES
 
 if(NOT is_pyside6_superproject_build)
     install(TARGETS pyside6 EXPORT PySide6WheelTargets
-                            LIBRARY DESTINATION "PySide6"
-                            ARCHIVE DESTINATION "PySide6"
-                            RUNTIME DESTINATION "PySide6")
+                            LIBRARY DESTINATION "${BINDING_NAME}"
+                            ARCHIVE DESTINATION "${BINDING_NAME}"
+                            RUNTIME DESTINATION "${BINDING_NAME}")
 endif()
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pyside6${pyside6_SUFFIX}.pc"
