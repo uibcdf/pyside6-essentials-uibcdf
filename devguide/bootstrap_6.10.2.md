@@ -1,15 +1,18 @@
-# Bootstrap 6.9.2
+# Bootstrap 6.10.2
 
 ## Scope
 
-This repo currently tracks the first Linux/Python 3.13 experimental UIBCDF line
-for `PySide6_Essentials` version `6.9.2`.
+This repo currently tracks the active Linux/Python 3.13 experimental UIBCDF
+line for `PySide6_Essentials` version `6.10.2`.
 
 The repo is no longer only a scaffold. It now contains:
 
 - a first manifest-driven recipe attempt
 - a vendored upstream subset for the Essentials line
 - a first self-contained packaging boundary under `package_boundary/`
+
+The boundary assets above come from the earlier `6.9.2` bootstrap environment
+and now serve as historical scaffolding while the line pivots to `6.10.2`.
 
 ## Why This Repo Exists
 
@@ -87,14 +90,15 @@ And is itself a prerequisite for:
 
 ## First Implementation Checklist
 
-1. validate the repo-local boundary still matches the intended 6.9.2 slice
+1. treat the repo-local `6.9.2` boundary as bootstrap evidence, not as the
+   authoritative target line
 2. keep the vendored upstream subset aligned with the chosen family version
 3. keep the deferred `bin/`, `PySide6/scripts/*`, and `PySide6/support/*`
    decisions explicit until they are reintroduced deliberately
 4. run a temporary `site-packages` smoke check
 5. only then attempt a true `conda build`
 
-## How To Open A Future 6.10.x Line
+## How To Open A Future Line
 
 1. validate a coherent 6.10.x environment first
 2. regenerate `PySide6_Essentials` manifests from that environment
