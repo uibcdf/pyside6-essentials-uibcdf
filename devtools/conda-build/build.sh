@@ -52,3 +52,10 @@ while IFS= read -r relpath; do
     mkdir -p "$(dirname "$dst")"
     cp -a "$src" "$dst"
 done < "$MANIFEST"
+
+init_py="$SP_DIR/PySide6_uibcdf/__init__.py"
+if [ -f "$init_py" ]; then
+    perl -0pi -e 's/\bshiboken6\b/shiboken6_uibcdf/g' "$init_py"
+    perl -0pi -e 's/sys\.modules\["PySide6"\]/sys.modules["PySide6_uibcdf"]/g' "$init_py"
+    perl -0pi -e 's/\bPySide6\b/PySide6_uibcdf/g' "$init_py"
+fi
