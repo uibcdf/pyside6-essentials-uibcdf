@@ -59,4 +59,6 @@ if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-add_subdirectory(doc)
+if(BUILD_DOCS)
+    add_subdirectory(doc)
+endif()

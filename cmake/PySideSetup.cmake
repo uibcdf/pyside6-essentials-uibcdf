@@ -7,12 +7,10 @@ cmake_policy(SET CMP0046 NEW)
 set(QT_MAJOR_VERSION 6)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../shiboken6/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Macros")
 
 # TODO: Don't directly include, ShibokenHelpers but rather pick it up from the installed Shiboken
 # package. Needs to support top-level build as well (Shiboken is not yet installed in that case).
-include(ShibokenHelpers)
 include(PySideHelpers)
 
 #does nothing if QFP_NO_OVERRIDE_OPTIMIZATION_FLAGS (no-size-optimization) flag is not set
@@ -42,6 +40,7 @@ pyside_internal_detect_if_cross_building()
 pyside_internal_set_up_extra_dependency_paths()
 pyside_internal_find_host_shiboken_tools()
 find_package(Shiboken6 6 CONFIG REQUIRED)
+include("${Shiboken6_DIR}/ShibokenHelpers.cmake")
 
 if(is_pyside6_superproject_build)
     shiboken_find_required_python()

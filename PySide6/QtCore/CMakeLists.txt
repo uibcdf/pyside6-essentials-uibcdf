@@ -79,7 +79,6 @@ ${QtCore_GEN_DIR}/qfileselector_wrapper.cpp
 ${QtCore_GEN_DIR}/qfilesystemwatcher_wrapper.cpp
 ${QtCore_GEN_DIR}/qfutureinterfacebase_wrapper.cpp
 ${QtCore_GEN_DIR}/qgenericargument_wrapper.cpp
-${QtCore_GEN_DIR}/qrangemodel_wrapper.cpp
 ${QtCore_GEN_DIR}/qgenericreturnargument_wrapper.cpp
 ${QtCore_GEN_DIR}/qhashseed_wrapper.cpp
 ${QtCore_GEN_DIR}/qidentityproxymodel_wrapper.cpp
@@ -205,6 +204,10 @@ ${SPECIFIC_OS_FILES}
 # module is always needed
 ${QtCore_GEN_DIR}/qtcore_module_wrapper.cpp
 )
+
+if(QT_VERSION_MAJOR GREATER 6 OR (QT_VERSION_MAJOR EQUAL 6 AND QT_VERSION_MINOR GREATER_EQUAL 10))
+    list(APPEND QtCore_SRC ${QtCore_GEN_DIR}/qrangemodel_wrapper.cpp)
+endif()
 
 get_property(QtCore_disabled_features TARGET Qt${QT_MAJOR_VERSION}::Core
              PROPERTY QT_DISABLED_PUBLIC_FEATURES)

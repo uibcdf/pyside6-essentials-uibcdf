@@ -122,7 +122,7 @@ macro(create_pyside_module)
     get_target_property(qt_core_includes Qt${QT_MAJOR_VERSION}::Core
                         INTERFACE_INCLUDE_DIRECTORIES)
     set(shiboken_include_dir_list ${pyside6_SOURCE_DIR} ${qt_platform_includes}
-        ${qt_core_includes})
+        ${qt_core_includes} ${CMAKE_INSTALL_PREFIX}/include)
     if(module_ADDITIONAL_INCLUDE_DIRS)
         list(APPEND shiboken_include_dir_list ${${module_ADDITIONAL_INCLUDE_DIRS}})
     endif()
@@ -346,7 +346,7 @@ macro(create_pyside_module)
     # on the host machine (usually, unless you use some userspace qemu based mechanism).
     # TODO: Can we do something better here to still get pyi files?
     if(NOT (PYSIDE_IS_CROSS_BUILD OR DISABLE_PYI))
-        set(SHIBOKEN_PYTHON_MODULE_DIR "${PYTHON_SITE_PACKAGES}/shiboken6")
+        set(SHIBOKEN_PYTHON_MODULE_DIR "${PYTHON_SITE_PACKAGES}/shiboken6_uibcdf")
         set(generate_pyi_options ${module_NAME} --sys-path
             "${pysidebindings_BINARY_DIR}"
             "${SHIBOKEN_PYTHON_MODULE_DIR}/.."
@@ -368,12 +368,12 @@ macro(create_pyside_module)
         endif()
 
         install(FILES "${CMAKE_CURRENT_BINARY_DIR}/../${module_NAME}.pyi"
-                DESTINATION "${PYTHON_SITE_PACKAGES}/PySide6")
+                DESTINATION "${PYTHON_SITE_PACKAGES}/${BINDING_NAME}")
     endif()
 
 
     # install
-    install(TARGETS ${module_NAME} LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}/PySide6")
+    install(TARGETS ${module_NAME} LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}/${BINDING_NAME}")
 
 
 

@@ -1,0 +1,92 @@
+Test a wheel
+============
+
+There is a tool that you can use to test a set of wheels called 'testwheel' but
+it's currently in a different repository (``qt/qtqa``):
+
+- Use ``scripts/packagetesting/testwheel.py`` from the
+  `qtqa repository <https://code.qt.io/cgit/qt/qtqa.git>`_.
+
+To test the wheels:
+
+- Create a virtual environment and activate it.
+- Install the dependencies listed on the ``requirements.txt`` file.
+- Install all the wheels: ``shiboken6``, ``shiboken6-generator``,
+  and ``PySide6-Essentials``.
+- Run the ``testwheel`` tool.
+- Install ``PySide6-Addons`` wheels.
+- Run again the ``testwheel`` tool.
+- In case you have access to commercial wheels, don't forget the
+  ``PySide6-M2M`` as well, and re-run the ``testwheel`` tool.
+
+Build on the command line
+=========================
+
+- Consider using ``build_scripts/qfp_tool.py``.
+
+Build with address sanitizer (Linux)
+====================================
+
+`Address sanitizer <https://clang.llvm.org/docs/AddressSanitizer.html>`_
+(ASAN) needs to be told to not exit on memory leaks and its library needs to be
+pre-loaded. Assuming the library is found at
+``/usr/lib/gcc/x86_64-linux-gnu/11``:
+
+.. code-block:: bash
+
+    export ASAN_OPTIONS=detect_leaks=0
+    export LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/11/libasan.so
+    python setup.py build [...] --sanitize-address
+
+Lately, this feature has been added to MVSC, too.
+
+Build with thread sanitizer
+===========================
+
+`Thread sanitizer <https://clang.llvm.org/docs/ThreadSanitizer.html>`_
+can be useful for detecting data races, etc, for example when experimenting
+with free threaded Python. It is similar to address sanitizer.
+
+For the build, the options ``--sanitize-thread`` and ``--disable-pyi`` should
+be passed to prevent it terminating due to false positives when generating the
+``.pyi`` files:
+
+.. code-block:: bash
+
+    python setup.py build [...] --sanitize-thread --disable-pyi
+
+Similar to address sanitizer, a library needs to be pre-loaded
+when running code:
+
+.. code-block:: bash
+
+    export LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/13/libtsan.so
+
+.. note:: Thread sanitizer maybe report false positives (data races
+          for  code that is protected by a ``QRecursiveMutex`` or a
+          ``std::recursive_mutex``).
+
+.. note:: When the error `Unexpected memory mapping` occurs, it helps to execute:
+
+          .. code-block:: bash
+
+              sudo sysctl vm.mmap_rnd_bits=28
+
+          See `Article on stackoverflow <https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels>`_\.
+
+De-Virtualize the Python Files
+==============================
+
+The Python files in the Shiboken module are completely virtual, i.E.
+they are nowhere existent in the file system for security reasons.
+
+For debugging purposes or to change something, it might be desirable
+to move these files into the normal file system, again.
+
+- Setting the environment variable "SBK_EMBED" once to false unpacks these
+  files when PySide6 or shiboken6 are imported. The files are written
+  into "side-packages/shiboken6/files.dir" and are used from then on.
+
+- Setting the variable to true removes "files.dir".
+
+- Without the "SBK_EMBED" variable, the embedding status remains sticky.

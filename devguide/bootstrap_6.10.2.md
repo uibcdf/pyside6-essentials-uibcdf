@@ -2,30 +2,76 @@
 
 ## Scope
 
-This repo currently tracks the active Linux/Python 3.13 experimental UIBCDF
-line for `PySide6_Essentials` version `6.10.2`.
+This repo tracked an exploratory Linux/Python 3.13 UIBCDF line for
+`PySide6_Essentials` version `6.10.2`.
 
-The repo is no longer only a scaffold. It now contains:
+It is no longer the preferred first release-candidate line.
+It remains valuable as the branch where we learned the correct packaging
+architecture and the real source-build constraints for coexistence with the
+native `PySide6` stack.
 
-- a first manifest-driven recipe attempt
-- a vendored upstream subset for the Essentials line
-- a first self-contained packaging boundary under `package_boundary/`
+## What 6.10.2 Already Taught Us
 
-The boundary assets above come from the earlier `6.9.2` bootstrap environment
-and now serve as historical scaffolding while the line pivots to `6.10.2`.
+The `6.10.2` exploration established that the right long-term architecture is:
 
-## Why This Repo Exists
+- sibling `*-uibcdf` repos
+- suffixed Python namespaces:
+  - `shiboken6_uibcdf`
+  - `PySide6_uibcdf`
+- real source-builds when coexistence matters
+- explicit build-toolchain handling for:
+  - LLVM / Clang discovery
+  - OpenGL headers
+  - generated wrapper/runtime layout
 
-The standalone investigation showed that the working Qt-for-Python family is
-not well modeled as a tiny extension over the current conda-forge stack.
+It also validated that the work should not live only in `molsysviewer`.
 
-The provisional UIBCDF family is instead:
+## Why 6.10.2 Is No Longer The First Line To Close
 
-- `shiboken6-uibcdf`
-- `pyside6-essentials-uibcdf`
-- `pyside6-addons-uibcdf`
+The exploratory build moved far enough to show a different class of blocker:
 
-This repo owns the `PySide6_Essentials` slice.
+- not packaging
+- not namespace split
+- not basic source-build viability
+
+Instead, the remaining failures started to reflect source/API drift between:
+
+- `*_uibcdf 6.10.2`
+- and `qt6-main 6.9.2`
+
+Concrete examples already exposed on this branch include:
+
+- `QRangeModel` being present in the `6.10.2` source assumptions but gated to
+  Qt 6.10+
+- `QDirListing` wrappers generated against signatures that do not match the
+  `qt6-main 6.9.2` headers
+
+That means this line is still useful, but no longer the cleanest first target.
+
+## Preferred Next Line
+
+The first line to close cleanly should now be:
+
+- `shiboken6-uibcdf 6.9.2`
+- `pyside6-essentials-uibcdf 6.9.2`
+- `pyside6-addons-uibcdf 6.9.2`
+- against `qt6-main 6.9.2`
+
+This `6.10.2` branch should therefore be read as:
+
+- an exploratory branch
+- a source of build-system / namespace knowledge
+- not the preferred first release-candidate line
+
+## What Must Be Reused In 6.9.2
+
+Do not lose the following lessons when reopening `6.9.2`:
+
+- use suffixed Python namespaces from the start
+- do not rely on pure repackaging when coexistence matters
+- propagate LLVM / Clang discovery explicitly
+- ensure shiboken wrapper invocations keep the required runtime/build env
+- keep generated wrapper source lists aligned with the actual Qt base version
 
 ## Expected Upstream Source
 
@@ -37,110 +83,12 @@ Relevant upstream subtree for this repo:
 
 - `/home/diego/repos@others/pyside-setup/sources/pyside6`
 
-This repo is expected to vendor only the part of that tree needed for the
-`PySide6_Essentials` boundary and build flow.
+## Historical 6.9.2 Bootstrap Assets
 
-## Where The Packaging Boundary Came From
+The earlier `6.9.2` boundary/bootstrap assets remain useful as historical
+scaffolding for the clean aligned line.
 
-The initial boundary reading came from the validated environment:
+They should be treated as:
 
-- `/home/diego/Myopt/miniconda3/envs/molsyssuite-qt-spike`
-
-Current local manifests copied into this repo are:
-
-- `manifests/pyside6_essentials.files.txt`
-- `manifests/pyside6_essentials.runtime.txt`
-
-The first self-contained packaging boundary was then copied into this repo
-under:
-
-- `package_boundary/site-packages`
-
-## Current Packaging Reading
-
-`PySide6_Essentials` appears to carry the large base runtime payload for the
-Qt-for-Python family, including a self-aligned Qt base runtime under:
-
-- `PySide6/Qt`
-
-This matters because the family should not be modeled naively as a tiny Python
-layer on top of `qt6-main` from conda-forge.
-
-## Planned First Packaging Decision
-
-The first pass mirrors the `shiboken6-uibcdf` approach:
-
-- start manifest-driven
-- copy the vendored `PySide6_Essentials` boundary from
-  `package_boundary/site-packages` into `$SP_DIR` by default
-- still allow overriding the source boundary with:
-  - `PYSIDE6_ESSENTIALS_UIBCDF_SOURCE_PREFIX`
-- use that step to prove the package boundary before attempting a more
-  source-build-led recipe
-
-## Expected Dependency Position
-
-`pyside6-essentials-uibcdf` depends on:
-
-- `shiboken6-uibcdf`
-
-And is itself a prerequisite for:
-
-- `pyside6-addons-uibcdf`
-
-## First Implementation Checklist
-
-1. treat the repo-local `6.9.2` boundary as bootstrap evidence, not as the
-   authoritative target line
-2. keep the vendored upstream subset aligned with the chosen family version
-3. keep the deferred `bin/`, `PySide6/scripts/*`, and `PySide6/support/*`
-   decisions explicit until they are reintroduced deliberately
-4. run a temporary `site-packages` smoke check
-5. only then attempt a true `conda build`
-
-## How To Open A Future Line
-
-1. validate a coherent 6.10.x environment first
-2. regenerate `PySide6_Essentials` manifests from that environment
-3. vendor the matching `sources/pyside6` code
-4. update this repo's version line and recipe pins
-5. re-run the same manifest-driven smoke path before any release attempt
-
-## Things To Keep Stable
-
-- do not mix `Essentials` payloads across family versions
-- keep this repo aligned with `shiboken6-uibcdf` and `pyside6-addons-uibcdf`
-- keep this note updated whenever the source extraction rule changes
-
-Current upstream subset staged in this repo:
-
-- root build files from `sources/pyside6`
-- `cmake`
-- `libpyside`
-- `libpysideqml`
-- `libpysideremoteobjects`
-- `plugins`
-- `PySide6/glue`, `PySide6/support`, `PySide6/templates`
-- runtime-backed module dirs currently imported for the Essentials boundary:
-  - `QtConcurrent`
-  - `QtCore`
-  - `QtDBus`
-  - `QtDesigner`
-  - `QtGui`
-  - `QtHelp`
-  - `QtNetwork`
-  - `QtOpenGL`
-  - `QtOpenGLWidgets`
-  - `QtPrintSupport`
-  - `QtQml`
-  - `QtQuick`
-  - `QtQuickControls2`
-  - `QtQuickTest`
-  - `QtQuickWidgets`
-  - `QtSql`
-  - `QtSvg`
-  - `QtSvgWidgets`
-  - `QtTest`
-  - `QtUiTools`
-  - `QtWidgets`
-  - `QtXml`
+- evidence for the `6.9.2` line
+- not as justification for forcing `6.10.2` to fit `qt6-main 6.9.2`

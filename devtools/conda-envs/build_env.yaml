@@ -6,3 +6,13 @@ dependencies:
   - conda-build
   - anaconda-client
   - pip
+  - cmake
+  - ninja
+  - pkg-config
+  - qt6-main =6.9.2
+  - libopengl
+  - libgl-devel
+  - libglx-devel
+  - clangdev
+  - llvmdev
+  - shiboken6-uibcdf =6.10.2
