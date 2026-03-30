@@ -1,0 +1,88 @@
+# Copyright (C) 2022 The Qt Company Ltd.
+# SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+from __future__ import annotations
+
+'''Test cases for QObject property and setProperty'''
+
+import os
+import sys
+import unittest
+
+from pathlib import Path
+sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
+from init_paths import init_test_paths
+init_test_paths(False)
+
+from PySide6.QtCore import QObject, Property, Signal
+
+
+class MyObjectWithNotifyProperty(QObject):
+    def __init__(self, parent=None):
+        QObject.__init__(self, parent)
+        self.p = 0
+
+    def readP(self):
+        return self.p
+
+    def writeP(self, v):
+        self.p = v
+        self.notifyP.emit()
+
+    notifyP = Signal()
+    myProperty = Property(int, readP, fset=writeP, notify=notifyP)
+
+
+class OtherClass:
+    """Helper for QObjectWithOtherClassPropertyTest."""
+    pass
+
+
+class MyObjectWithOtherClassProperty(QObject):
+    """Helper for QObjectWithOtherClassPropertyTest."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._otherclass = None
+
+    def _get_otherclass(self):
+        return self._otherclass
+
+    def _set_otherclass(self, o):
+        self._otherclass = o
+
+    otherclass = Property(OtherClass, fget=_get_otherclass, fset=_set_otherclass)
+
+
+class PropertyWithNotify(unittest.TestCase):
+    def called(self):
+        self.called_ = True
+
+    def testNotify(self):
+        self.called_ = False
+        obj = MyObjectWithNotifyProperty()
+        obj.notifyP.connect(self.called)
+        obj.myProperty = 10
+        self.assertTrue(self.called_)
+
+    def testHasProperty(self):
+        o = MyObjectWithNotifyProperty()
+        o.setProperty("myProperty", 10)
+        self.assertEqual(o.myProperty, 10)
+        self.assertEqual(o.property("myProperty"), 10)
+
+
+class QObjectWithOtherClassPropertyTest(unittest.TestCase):
+    """PYSIDE-2193: For properties of custom classes not wrapped by shiboken,
+       QVariant<PyObjectWrapper> is used, which had refcount issues causing crashes.
+       Exercise the QVariant conversion by setting and retrieving via the
+       QVariant-based property()/setProperty() API."""
+    def testNotify(self):
+        obj = MyObjectWithOtherClassProperty()
+        obj.setProperty("otherclass", OtherClass())
+        for i in range(10):
+            pv = obj.property("otherclass")
+            print(pv)  # Exercise repr
+            self.assertTrue(type(pv) is OtherClass)
+
+
+if __name__ == '__main__':
+    unittest.main()

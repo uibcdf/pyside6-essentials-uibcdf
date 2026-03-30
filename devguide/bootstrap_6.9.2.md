@@ -140,3 +140,30 @@ Current upstream subset staged in this repo:
   - `QtUiTools`
   - `QtWidgets`
   - `QtXml`
+
+## Pause Checkpoint
+
+Current active state before pausing:
+
+- The repo is already on the clean `6.9.2` source line.
+- The `_uibcdf` namespace split is already in place.
+- `build.sh` now also includes a post-install relocation step intended to move any canonical
+  `site-packages/PySide6/...` install tree into `site-packages/PySide6_uibcdf/...`.
+- `build.sh` now exports `C_INCLUDE_PATH` and `CPLUS_INCLUDE_PATH` with `${PREFIX}/include` so the
+  OpenGL headers from `libgl-devel` are visible to `shiboken`.
+- `meta.yaml` now asserts that `site-packages/PySide6/Qt` should not remain after installation.
+- `QtCore` now carries the `6.9.2` compatibility cut for `QDirListing`:
+  - `QDirListing` and `QDirListingIterator` are marked `generate="no"`
+  - their generated wrapper entries were removed from `PySide6/QtCore/CMakeLists.txt`
+
+The last rebuild was interrupted intentionally for this pause.
+
+Exact next command:
+
+- `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
+
+What to check first when resuming:
+
+1. whether the rebuilt package now installs the Qt runtime under `PySide6_uibcdf/Qt/...`
+2. whether any canonical `PySide6/Qt/...` tree still leaks into the package manifest
+3. only after that, re-open `pyside6-addons-uibcdf`

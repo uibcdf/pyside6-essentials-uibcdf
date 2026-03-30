@@ -19,7 +19,6 @@ set_property(SOURCE ${QtGui_SRC_UNITY_EXCLUDED_SRC}
 
 set(QtGui_SRC_RHI
 ${QtGui_GEN_DIR}/qrhi_wrapper.cpp
-${QtGui_GEN_DIR}/qrhiadapter_wrapper.cpp
 ${QtGui_GEN_DIR}/qrhibuffer_wrapper.cpp
 ${QtGui_GEN_DIR}/qrhicolorattachment_wrapper.cpp
 ${QtGui_GEN_DIR}/qrhicommandbuffer_wrapper.cpp
@@ -68,13 +67,13 @@ ${QtGui_GEN_DIR}/qshadercode_wrapper.cpp
 ${QtGui_GEN_DIR}/qshaderkey_wrapper.cpp
 )
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if (ENABLE_WIN)
     list(APPEND QtGui_SRC_RHI
          ${QtGui_GEN_DIR}/qrhid3d11initparams_wrapper.cpp
          ${QtGui_GEN_DIR}/qrhid3d11nativehandles_wrapper.cpp
          ${QtGui_GEN_DIR}/qrhid3d12initparams_wrapper.cpp
          ${QtGui_GEN_DIR}/qrhid3d12nativehandles_wrapper.cpp)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif (ENABLE_MAC)
     list(APPEND QtGui_SRC_RHI
          ${QtGui_GEN_DIR}/qrhimetalinitparams_wrapper.cpp)
 endif()
@@ -85,7 +84,6 @@ ${QtGui_GEN_DIR}/qabstractfileiconprovider_wrapper.cpp
 ${QtGui_GEN_DIR}/qabstracttextdocumentlayout_paintcontext_wrapper.cpp
 ${QtGui_GEN_DIR}/qabstracttextdocumentlayout_selection_wrapper.cpp
 ${QtGui_GEN_DIR}/qabstracttextdocumentlayout_wrapper.cpp
-${QtGui_GEN_DIR}/qaccessibilityhints_wrapper.cpp
 ${QtGui_GEN_DIR}/qaccessible_wrapper.cpp
 ${QtGui_GEN_DIR}/qaccessibleactioninterface_wrapper.cpp
 ${QtGui_GEN_DIR}/qaccessibleannouncementevent_wrapper.cpp
@@ -296,14 +294,7 @@ get_property(QtGui_enabled_features TARGET Qt${QT_MAJOR_VERSION}::Gui
 if("xcb" IN_LIST QtGui_enabled_features)
     list(APPEND QtGui_SRC
          ${QtGui_GEN_DIR}/qnativeinterface_qx11application_wrapper.cpp)
-endif()
-
-if("wayland" IN_LIST QtGui_enabled_features)
-    list(APPEND QtGui_SRC
-         ${QtGui_GEN_DIR}/qnativeinterface_qwaylandapplication_wrapper.cpp)
-endif()
-
-if(WIN32)
+elseif(WIN32)
     list(APPEND QtGui_SRC
          ${QtGui_GEN_DIR}/qnativeinterface_qwindowsscreen_wrapper.cpp)
 endif()
@@ -366,4 +357,4 @@ create_pyside_module(NAME QtGui
 
 install(FILES ${pyside6_SOURCE_DIR}/qpytextobject.h
               ${pyside6_SOURCE_DIR}/qtguihelper.h
-        DESTINATION PySide6/include/QtGui/)
+        DESTINATION include/PySide6/QtGui/)

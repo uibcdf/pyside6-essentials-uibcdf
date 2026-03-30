@@ -15,10 +15,13 @@ set(QtCore_static_sources
     "${pyside6_SOURCE_DIR}/qiopipe.h"
 )
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(ENABLE_WIN)
     set(SPECIFIC_OS_FILES
       ${QtCore_GEN_DIR}/qwineventnotifier_wrapper.cpp
     )
+else()
+    set(SPECIFIC_OS_FILES
+      ${QtCore_GEN_DIR}/qprocess_unixprocessparameters_wrapper.cpp)
 endif()
 
 set(QtCore_SRC
@@ -64,8 +67,6 @@ ${QtCore_GEN_DIR}/qdatetime_wrapper.cpp
 ${QtCore_GEN_DIR}/qdeadlinetimer_wrapper.cpp
 ${QtCore_GEN_DIR}/qdir_wrapper.cpp
 ${QtCore_GEN_DIR}/qdiriterator_wrapper.cpp
-${QtCore_GEN_DIR}/qdirlisting_wrapper.cpp
-${QtCore_GEN_DIR}/qdirlisting_direntry_wrapper.cpp
 ${QtCore_GEN_DIR}/qdynamicpropertychangeevent_wrapper.cpp
 ${QtCore_GEN_DIR}/qeasingcurve_wrapper.cpp
 ${QtCore_GEN_DIR}/qelapsedtimer_wrapper.cpp
@@ -79,7 +80,6 @@ ${QtCore_GEN_DIR}/qfileselector_wrapper.cpp
 ${QtCore_GEN_DIR}/qfilesystemwatcher_wrapper.cpp
 ${QtCore_GEN_DIR}/qfutureinterfacebase_wrapper.cpp
 ${QtCore_GEN_DIR}/qgenericargument_wrapper.cpp
-${QtCore_GEN_DIR}/qrangemodel_wrapper.cpp
 ${QtCore_GEN_DIR}/qgenericreturnargument_wrapper.cpp
 ${QtCore_GEN_DIR}/qhashseed_wrapper.cpp
 ${QtCore_GEN_DIR}/qidentityproxymodel_wrapper.cpp
@@ -128,6 +128,8 @@ ${QtCore_GEN_DIR}/qpersistentmodelindex_wrapper.cpp
 ${QtCore_GEN_DIR}/qpluginloader_wrapper.cpp
 ${QtCore_GEN_DIR}/qpoint_wrapper.cpp
 ${QtCore_GEN_DIR}/qpointf_wrapper.cpp
+${QtCore_GEN_DIR}/qprocess_wrapper.cpp
+${QtCore_GEN_DIR}/qprocessenvironment_wrapper.cpp
 ${QtCore_GEN_DIR}/qpropertyanimation_wrapper.cpp
 ${QtCore_GEN_DIR}/qrandomgenerator64_wrapper.cpp
 ${QtCore_GEN_DIR}/qrandomgenerator_wrapper.cpp
@@ -164,7 +166,6 @@ ${QtCore_GEN_DIR}/qstringlistmodel_wrapper.cpp
 ${QtCore_GEN_DIR}/qsysinfo_wrapper.cpp
 ${QtCore_GEN_DIR}/qsystemsemaphore_wrapper.cpp
 ${QtCore_GEN_DIR}/qt_wrapper.cpp
-${QtCore_GEN_DIR}/qtcorehelper_qdirlistingiterator_wrapper.cpp
 ${QtCore_GEN_DIR}/qtcorehelper_qgenericargumentholder_wrapper.cpp
 ${QtCore_GEN_DIR}/qtcorehelper_qgenericreturnargumentholder_wrapper.cpp
 ${QtCore_GEN_DIR}/qtcorehelper_qiopipe_wrapper.cpp
@@ -232,23 +233,6 @@ else()
     list(APPEND QtCore_SRC ${QtCore_GEN_DIR}/qsharedmemory_wrapper.cpp)
 endif()
 
-if("process" IN_LIST QtCore_disabled_features)
-    list(APPEND QtCore_DROPPED_ENTRIES QProcess)
-    message(STATUS "Qt${QT_MAJOR_VERSION}Core: Dropping QProcess")
-else()
-    list(APPEND QtCore_SRC ${QtCore_GEN_DIR}/qprocess_wrapper.cpp)
-    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        list(APPEND QtCore_SRC ${QtCore_GEN_DIR}/qprocess_unixprocessparameters_wrapper.cpp)
-    endif()
-endif()
-
-if("processenvironment" IN_LIST QtCore_disabled_features)
-    list(APPEND QtCore_DROPPED_ENTRIES QProcessEnvironment)
-    message(STATUS "Qt${QT_MAJOR_VERSION}Core: Dropping QProcessEnvironment")
-else()
-    list(APPEND QtCore_SRC ${QtCore_GEN_DIR}/qprocessenvironment_wrapper.cpp)
-endif()
-
 configure_file("${QtCore_SOURCE_DIR}/QtCore_global.post.h.in"
                "${QtCore_BINARY_DIR}/QtCore_global.post.h" @ONLY)
 
@@ -306,4 +290,4 @@ if (APPLE)
 endif()
 
 install(FILES ${pyside6_SOURCE_DIR}/qtcorehelper.h ${pyside6_SOURCE_DIR}/qiopipe.h
-        DESTINATION PySide6/include/QtCore/)
+        DESTINATION include/PySide6/QtCore/)

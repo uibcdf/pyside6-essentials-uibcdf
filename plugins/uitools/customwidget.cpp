@@ -9,14 +9,12 @@
 #include <basewrapper.h>
 #include <bindingmanager.h>
 #include <sbkconverter.h>
-#include <sbkpep.h>
-
 
 // Part of the static plugin linked to the QtUiLoader Python module,
 // allowing it to create a custom widget written in Python.
 PyCustomWidget::PyCustomWidget(PyObject *objectType) :
     m_pyObject(objectType),
-    m_name(QString::fromUtf8(PepType_GetFullyQualifiedNameStr(reinterpret_cast<PyTypeObject *>(objectType))))
+    m_name(QString::fromUtf8(reinterpret_cast<PyTypeObject *>(objectType)->tp_name))
 {
 }
 
@@ -90,21 +88,20 @@ QWidget *PyCustomWidget::createWidget(QWidget *parent)
     PyTuple_SetItem(pyArgs.object(), 0, pyParent); // tuple will keep pyParent reference
 
     // Call python constructor
-    auto *obResult = PyObject_CallObject(m_pyObject, pyArgs);
-    if (obResult == nullptr) {
+    auto *result = reinterpret_cast<SbkObject *>(PyObject_CallObject(m_pyObject, pyArgs));
+    if (result == nullptr) {
         qWarning("Unable to create a Python custom widget of type \"%s\".",
                  qPrintable(m_name));
         PyErr_Print();
         return nullptr;
     }
 
-    auto *result = reinterpret_cast<SbkObject *>(obResult);
     if (unknownParent) // if parent does not exist in python, transfer the ownership to cpp
         Shiboken::Object::releaseOwnership(result);
     else
-        Shiboken::Object::setParent(pyParent, obResult);
+        Shiboken::Object::setParent(pyParent, reinterpret_cast<PyObject *>(result));
 
-    return reinterpret_cast<QWidget *>(Shiboken::Object::cppPointer(result, Py_TYPE(obResult)));
+    return reinterpret_cast<QWidget *>(Shiboken::Object::cppPointer(result, Py_TYPE(result)));
 }
 
 void PyCustomWidget::initialize(QDesignerFormEditorInterface *)
