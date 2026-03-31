@@ -29,6 +29,8 @@
                 <define-ownership class="native" owner="c++"/>
             </modify-argument>
         </modify-function>
+        <!-- UIBCDF 6.9.2: flag-type mismatch inherited from QQuickImageProvider. -->
+        <modify-function signature="flags()const" remove="all"/>
     </object-type>
 
     <object-type name="QQuickFramebufferObject">
@@ -53,10 +55,6 @@
     <object-type name="QQuickImageProvider">
         <!-- UIBCDF 6.9.2: shiboken generates wrong flag type (QFlags<QCommandLineOption::Flag>)
              instead of QFlags<QQmlImageProviderBase::Flag> for this virtual override. -->
-        <modify-function signature="flags()const" remove="all"/>
-    </object-type>
-    <object-type name="QQuickAsyncImageProvider">
-        <!-- UIBCDF 6.9.2: same flag-type mismatch inherited from QQuickImageProvider. -->
         <modify-function signature="flags()const" remove="all"/>
     </object-type>
     <object-type name="QQuickImageResponse"/>
