@@ -170,7 +170,7 @@
   </value-type>
   <value-type name="QShaderCode" since="6.6" private="yes"/>
   <value-type name="QShaderKey" since="6.6" private="yes"/>
-  <value-type name="QShaderVersion" since="6.6" private="yes">
+  <value-type name="QShaderVersion" since="6.6" private="yes" generate="no">
     <enum-type name="Flag" flags="Flags"/>
   </value-type>
 

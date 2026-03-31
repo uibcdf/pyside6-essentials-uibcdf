@@ -150,7 +150,7 @@
         <!-- ### -->
     </object-type>
 
-    <object-type name="QLocalServer">
+    <object-type name="QLocalServer" generate="no">
         <enum-type name="SocketOption" flags="SocketOptions"/>
         <modify-function signature="waitForNewConnection(int,bool*)" allow-thread="yes">
             <!-- FIXME -->
@@ -170,10 +170,12 @@
 
         </modify-function>
     </object-type>
-    <object-type name="QLocalSocket">
+    <object-type name="QLocalSocket" generate="no">
         <enum-type name="LocalSocketError"/>
         <enum-type name="SocketOption" flags="SocketOptions"/>
         <enum-type name="LocalSocketState"/>
+        <modify-function signature="setSocketOptions(QFlags&lt;QLocalSocket::SocketOption&gt;)" remove="all"/>
+        <modify-function signature="socketOptions()const" remove="all"/>
     </object-type>
     <object-type name="QNetworkAccessManager">
         <enum-type name="Operation"/>

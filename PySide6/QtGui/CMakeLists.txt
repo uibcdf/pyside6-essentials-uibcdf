@@ -11,7 +11,6 @@ set(QtGui_DROPPED_ENTRIES)
 set(QtGui_SRC_UNITY_EXCLUDED_SRC
     ${QtGui_GEN_DIR}/qtextframe_iterator_wrapper.cpp
     ${QtGui_GEN_DIR}/qtextblock_iterator_wrapper.cpp
-    ${QtGui_GEN_DIR}/qshaderversion_wrapper.cpp
 )
 
 set_property(SOURCE ${QtGui_SRC_UNITY_EXCLUDED_SRC}
@@ -229,7 +228,6 @@ ${QtGui_GEN_DIR}/qscreen_wrapper.cpp
 ${QtGui_GEN_DIR}/qshortcut_wrapper.cpp
 ${QtGui_GEN_DIR}/qrasterwindow_wrapper.cpp
 ${QtGui_GEN_DIR}/qrawfont_wrapper.cpp
-${QtGui_SRC_RHI}
 ${QtGui_GEN_DIR}/qscrollevent_wrapper.cpp
 ${QtGui_GEN_DIR}/qscrollprepareevent_wrapper.cpp
 ${QtGui_GEN_DIR}/qstatictext_wrapper.cpp
@@ -262,8 +260,6 @@ ${QtGui_GEN_DIR}/qtextlist_wrapper.cpp
 ${QtGui_GEN_DIR}/qtextlistformat_wrapper.cpp
 ${QtGui_GEN_DIR}/qtextobject_wrapper.cpp
 ${QtGui_GEN_DIR}/qtextobjectinterface_wrapper.cpp
-${QtGui_GEN_DIR}/qtextoption_tab_wrapper.cpp
-${QtGui_GEN_DIR}/qtextoption_wrapper.cpp
 ${QtGui_GEN_DIR}/qtexttable_wrapper.cpp
 ${QtGui_GEN_DIR}/qtexttablecell_wrapper.cpp
 ${QtGui_GEN_DIR}/qtexttablecellformat_wrapper.cpp
@@ -305,9 +301,7 @@ if("opengl" IN_LIST QtGui_enabled_features OR "opengles2" IN_LIST QtGui_enabled_
          ${QtGui_GEN_DIR}/qopenglcontextgroup_wrapper.cpp
          ${QtGui_GEN_DIR}/qopenglextrafunctions_wrapper.cpp
          ${QtGui_GEN_DIR}/qopenglfunctions_wrapper.cpp
-         ${QtGui_GEN_DIR}/qopenglcontext_wrapper.cpp
-         ${QtGui_GEN_DIR}/qrhigles2initparams_wrapper.cpp
-         ${QtGui_GEN_DIR}/qrhigles2nativehandles_wrapper.cpp)
+         ${QtGui_GEN_DIR}/qopenglcontext_wrapper.cpp)
 else()
     list(APPEND QtGui_DROPPED_ENTRIES
          QOpenGLContext QOpenGLContextGroup QOpenGLPaintDevice

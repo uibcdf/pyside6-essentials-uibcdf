@@ -207,11 +207,8 @@
     </object-type>
 
     <object-type name="QQmlEngine">
-        <modify-function signature="addImageProvider(const QString&amp;,QQmlImageProviderBase*)">
-          <modify-argument index="2">
-            <define-ownership owner="c++"/>
-          </modify-argument>
-        </modify-function>
+        <modify-function signature="addImageProvider(const QString&amp;,QQmlImageProviderBase*)" remove="all"/>
+        <modify-function signature="imageProvider(const QString&amp;)const" remove="all"/>
         <modify-function signature="addImportPath(const QString &amp;)">
             <modify-argument index="1"><replace-type modified-type="PyPathLike"/></modify-argument>
             <inject-code class="target" position="beginning" file="../glue/qtcore.cpp" snippet="qfile-path-1"/>
@@ -267,10 +264,7 @@
         <enum-type name="Status"/>
     </object-type>
     <object-type name="QQmlFileSelector"/>
-    <object-type name="QQmlImageProviderBase">
-        <enum-type name="Flag" flags="Flags"/>
-        <enum-type name="ImageType"/>
-    </object-type>
+    <object-type name="QQmlImageProviderBase" generate="no"/>
     <object-type name="QQmlIncubator">
         <enum-type name="IncubationMode"/>
         <enum-type name="Status"/>

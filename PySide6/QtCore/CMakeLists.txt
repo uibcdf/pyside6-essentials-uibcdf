@@ -157,11 +157,7 @@ ${QtCore_GEN_DIR}/qsocketnotifier_wrapper.cpp
 ${QtCore_GEN_DIR}/qsortfilterproxymodel_wrapper.cpp
 ${QtCore_GEN_DIR}/qstandardpaths_wrapper.cpp
 ${QtCore_GEN_DIR}/qstorageinfo_wrapper.cpp
-${QtCore_GEN_DIR}/qstringconverter_wrapper.cpp
-${QtCore_GEN_DIR}/qstringconverterbase_state_wrapper.cpp
 ${QtCore_GEN_DIR}/qstringconverterbase_wrapper.cpp
-${QtCore_GEN_DIR}/qstringdecoder_wrapper.cpp
-${QtCore_GEN_DIR}/qstringencoder_wrapper.cpp
 ${QtCore_GEN_DIR}/qstringlistmodel_wrapper.cpp
 ${QtCore_GEN_DIR}/qsysinfo_wrapper.cpp
 ${QtCore_GEN_DIR}/qsystemsemaphore_wrapper.cpp

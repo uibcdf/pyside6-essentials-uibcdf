@@ -155,15 +155,43 @@ Current active state before pausing:
 - `QtCore` now carries the `6.9.2` compatibility cut for `QDirListing`:
   - `QDirListing` and `QDirListingIterator` are marked `generate="no"`
   - their generated wrapper entries were removed from `PySide6/QtCore/CMakeLists.txt`
+- `QtCore` / `QtNetwork` / `QtGui` / `QtWidgets` already carry multiple deliberate compatibility cuts for
+  this standalone-oriented line, including:
+  - `QStringEncoder`, `QStringDecoder`, `QStringConverter*`, `QTextStream` encoding helpers
+  - `QLocalSocket`, `QLocalServer`
+  - `QTextOption` and its direct dependent overloads
+  - `QFileDialog`, `QFileSystemModel`, `QMessageBox`, `QPinchGesture`, `QTreeWidgetItemIterator`
+- `QtQml` also now carries the first direct cut in this line:
+  - `QQmlImageProviderBase` removed from generation
+  - `QQmlEngine::addImageProvider(...)` removed
+  - `QQmlEngine::imageProvider(...)` removed
 
-The last rebuild was interrupted intentionally for this pause.
+Latest build reading:
 
-Exact next command:
+- the build already gets well past `QtWidgets`
+- `QQmlImageProviderBase` is no longer the active blocker
+- the current hard failure is now in `QtQuick`
+- exact failing surfaces:
+  - `QQuickItem::flags() const`
+  - `QQuickItem::setFlags(...)`
+  - `QQuickRenderTarget::fromOpenGLTexture(...)` with flags
+- exact pattern:
+  - generated wrappers still use `QFlags<QCommandLineOption::Flag>`
+  - Qt expects `QQuickItem::Flags` / `QQuickRenderTarget::Flags`
 
-- `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
+Exact next task:
+
+1. patch `QtQuick` for this `6.9.2` line:
+   - remove `QQuickItem::flags() const`
+   - remove `QQuickItem::setFlags(...)`
+   - remove the problematic `QQuickRenderTarget::fromOpenGLTexture(...)` flags overload
+2. rerun:
+   - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
+3. only after `Essentials` closes again:
+   - resume `pyside6-addons-uibcdf`
 
 What to check first when resuming:
 
-1. whether the rebuilt package now installs the Qt runtime under `PySide6_uibcdf/Qt/...`
-2. whether any canonical `PySide6/Qt/...` tree still leaks into the package manifest
-3. only after that, re-open `pyside6-addons-uibcdf`
+1. whether the next failure remains in `QtQuick` or moves further down the build
+2. whether the rebuilt package still installs the Qt runtime under `PySide6_uibcdf/Qt/...`
+3. only after `Essentials` closes again, re-open `pyside6-addons-uibcdf`

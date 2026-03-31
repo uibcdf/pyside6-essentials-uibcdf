@@ -268,6 +268,8 @@
 
   <value-type name="QStaticText">
       <enum-type name="PerformanceHint"/>
+      <modify-function signature="setTextOption(const QTextOption&amp;)" remove="all"/>
+      <modify-function signature="textOption()const" remove="all"/>
   </value-type>
   <value-type name="QTextFragment"/>
   <value-type name="QBitmap" >
@@ -280,13 +282,6 @@
   </value-type>
   <value-type name="QTextInlineObject"/>
   <value-type name="QTextDocumentFragment"/>
-  <value-type name="QTextOption">
-      <!-- PYSIDE-2088, Avoid MSVC signedness issues -->
-      <enum-type name="Flag" flags="Flags" cpp-type="unsigned"/>
-      <enum-type name="TabType"/>
-      <enum-type name="WrapMode"/>
-      <value-type name="Tab"/>
-  </value-type>
   <value-type name="QTextLine" >
     <enum-type name="CursorPosition"/>
     <enum-type name="Edge"/>
@@ -1049,6 +1044,10 @@
 
   <value-type name="QFontMetricsF" >
 
+    <modify-function signature="boundingRect(QString,QTextOption)const" remove="all"/>
+    <modify-function signature="horizontalAdvance(QString,QTextOption)const" remove="all"/>
+    <modify-function signature="tightBoundingRect(QString,QTextOption)const" remove="all"/>
+
     <modify-function signature="boundingRect(QChar)const" rename="boundingRectChar">
       <modify-argument index="1">
         <replace-type modified-type="char"/>
@@ -1082,6 +1081,10 @@
     </modify-function>
   </value-type>
   <value-type name="QFontMetrics" >
+
+    <modify-function signature="boundingRect(QString,QTextOption)const" remove="all"/>
+    <modify-function signature="horizontalAdvance(QString,QTextOption)const" remove="all"/>
+    <modify-function signature="tightBoundingRect(QString,QTextOption)const" remove="all"/>
 
     <modify-function signature="boundingRect(QChar)const" rename="boundingRectChar">
       <modify-argument index="1">
@@ -1810,6 +1813,8 @@
     </extra-includes>
     <enum-type name="CursorMode"/>
     <enum-type name="GlyphRunRetrievalFlag" flags="GlyphRunRetrievalFlags" since="6.5"/>
+    <modify-function signature="setTextOption(const QTextOption&amp;)" remove="all"/>
+    <modify-function signature="textOption()const" remove="all"/>
     <value-type name="FormatRange">
       <include file-name="QTextLayout" location="global"/>
     </value-type>
@@ -1847,6 +1852,8 @@
       </modify-argument>
     </modify-function>
     <modify-function signature="print(QPagedPaintDevice*)const" allow-thread="yes" rename="print_"/>
+    <modify-function signature="defaultTextOption()const" remove="all"/>
+    <modify-function signature="setDefaultTextOption(const QTextOption&amp;)" remove="all"/>
   </object-type>
   <object-type name="QTextDocumentWriter"/>
   <object-type name="QTextTable">
@@ -2069,6 +2076,8 @@
     <enum-type name="CompositionMode"/>
     <enum-type name="PixmapFragmentHint" flags="PixmapFragmentHints"/>
     <enum-type name="RenderHint" flags="RenderHints"/>
+    <modify-function signature="drawText(const QRectF&amp;,const QString&amp;,const QTextOption&amp;)" remove="all"/>
+    <modify-function signature="boundingRect(const QRectF&amp;,const QString&amp;,const QTextOption&amp;)" remove="all"/>
     <value-type name="PixmapFragment">
         <include file-name="QPainter" location="global"/>
     </value-type>
@@ -2514,6 +2523,7 @@
 
   <value-type name="QMatrix4x4">
     <enum-type name="Flag" flags="Flags"/>
+    <modify-function signature="flags()const" remove="all"/>
 
     <!-- Qt5: HAIRY TRICK ALERT ahead!
         Qt5 partially replaced 'qreal' by float.

@@ -27,8 +27,6 @@ ${QtNetwork_GEN_DIR}/qhttpmultipart_wrapper.cpp
 ${QtNetwork_GEN_DIR}/qhttppart_wrapper.cpp
 ${QtNetwork_GEN_DIR}/qhttp2configuration_wrapper.cpp
 ${QtNetwork_GEN_DIR}/qipv6address_wrapper.cpp
-${QtNetwork_GEN_DIR}/qlocalserver_wrapper.cpp
-${QtNetwork_GEN_DIR}/qlocalsocket_wrapper.cpp
 ${QtNetwork_GEN_DIR}/qnetworkaccessmanager_wrapper.cpp
 ${QtNetwork_GEN_DIR}/qnetworkaddressentry_wrapper.cpp
 ${QtNetwork_GEN_DIR}/qnetworkcachemetadata_wrapper.cpp

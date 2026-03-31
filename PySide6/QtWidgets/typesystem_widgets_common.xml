@@ -200,35 +200,7 @@
   </value-type>
   <value-type name="QTableWidgetSelectionRange"/>
 
-  <value-type name="QTreeWidgetItemIterator" >
-    <modify-function signature="QTreeWidgetItemIterator(QTreeWidget*,QFlags&lt;QTreeWidgetItemIterator::IteratorFlag&gt;)">
-        <modify-argument index="this">
-            <parent index="1" action="add"/>
-        </modify-argument>
-    </modify-function>
-
-    <add-function signature="__iter__()" return-type="PyObject*">
-      <inject-code class="target" position="beginning">
-        <insert-template name="__iter__"/>
-      </inject-code>
-    </add-function>
-    <add-function signature="__next__()" return-type="PyObject*">
-      <inject-code class="target" position="beginning" file="../glue/qtwidgets.cpp" snippet="qtreewidgetitemiterator-next"/>
-    </add-function>
-
-    <add-function signature="value()" return-type="QTreeWidgetItem*">
-      <inject-code file="../glue/qtwidgets.cpp" snippet="qtreewidgetitemiterator-value"/>
-    </add-function>
-    <enum-type name="IteratorFlag" flags="IteratorFlags"/>
-    <!-- ### See bug 778 -->
-    <modify-function signature="operator++(int)" remove="all"/>
-    <modify-function signature="operator--(int)" remove="all"/>
-    <modify-function signature="operator++()" remove="all"/>
-    <modify-function signature="operator--()" remove="all"/>
-    <!-- ### Operator* doesn't make sense in Python. -->
-    <modify-function signature="operator*()const" remove="all"/>
-    <!-- ### -->
-  </value-type>
+  <value-type name="QTreeWidgetItemIterator" generate="no" />
 
   <object-type name="QLayoutItem">
 
@@ -1989,6 +1961,12 @@
   </object-type>
 
   <object-type name="QWidget" delete-in-main-thread="true" polymorphic-base="true">
+    <modify-function signature="render(QPaintDevice*,const QPoint&amp;,const QRegion&amp;,QWidget::RenderFlags)" remove="all"/>
+    <modify-function signature="render(QPainter*,const QPoint&amp;,const QRegion&amp;,QWidget::RenderFlags)" remove="all"/>
+    <modify-function signature="render(QPaintDevice*,const QPoint&amp;,const QRegion&amp;,QFlags&lt;QWidget::RenderFlag&gt;)" remove="all"/>
+    <modify-function signature="render(QPainter*,const QPoint&amp;,const QRegion&amp;,QFlags&lt;QWidget::RenderFlag&gt;)" remove="all"/>
+    <modify-function signature="render(QPaintDevice*,const QPoint&amp;,const QRegion&amp;,QFlags&lt;QTextItem::RenderFlag&gt;)" remove="all"/>
+    <modify-function signature="render(QPainter*,const QPoint&amp;,const QRegion&amp;,QFlags&lt;QTextItem::RenderFlag&gt;)" remove="all"/>
     <!-- see QWindow::nativeEvent(), QAbstractNativeEventFilter::nativeEventFilter() -->
     <inject-code class="native" position="beginning" file="../glue/qtwidgets.cpp" snippet="qwidget-addaction-glue"/>
     <inject-code class="native" position="beginning">
@@ -2191,12 +2169,6 @@
       </modify-argument>
     </modify-function>
 
-    <modify-function signature="render(QPainter*,QPoint,QRegion,QFlags&lt;QWidget::RenderFlag&gt;)">
-      <modify-argument index="2">
-        <!-- Removed because the render(QPainter*) overload conflicts with the identical function in QGraphicsView -->
-        <remove-default-expression/>
-      </modify-argument>
-    </modify-function>
     <modify-function signature="setFocusProxy(QWidget*)">
       <modify-argument index="1">
         <parent index="this" action="add"/>
@@ -2303,7 +2275,7 @@
     </modify-function>
   </object-type>
 
-  <object-type name="QMessageBox">
+  <object-type name="QMessageBox" generate="no">
     <enum-type name="ButtonRole"/>
     <enum-type name="Icon"/>
     <enum-type name="StandardButton" python-type="IntFlag" flags="StandardButtons"/>
@@ -2322,28 +2294,16 @@
                      snippet="qmessagebox-open-connect-accept"/>
     </add-function>
     <!-- FIXME PYSIDE-7: Remove deprecated overloads -->
-    <modify-function signature="critical(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
-      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
-    </modify-function>
     <modify-function signature="critical(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
                      allow-thread="yes">
-      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
-    </modify-function>
-    <modify-function signature="information(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
       <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
     </modify-function>
     <modify-function signature="information(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
                      allow-thread="yes">
       <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
     </modify-function>
-    <modify-function signature="question(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
-      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
-    </modify-function>
     <modify-function signature="question(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
                      allow-thread="yes">
-      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
-    </modify-function>
-    <modify-function signature="warning(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
       <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
     </modify-function>
     <modify-function signature="warning(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
@@ -2485,7 +2445,7 @@
     </modify-function>
   </object-type>
 
-  <object-type name="QFileDialog">
+  <object-type name="QFileDialog" generate="no">
     <enum-type name="AcceptMode"/>
     <enum-type name="DialogLabel"/>
     <enum-type name="FileMode"/>
@@ -2508,70 +2468,12 @@
 
     <modify-function signature="getExistingDirectory(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QFileDialog::Option>)" allow-thread="yes"/>
     <modify-function signature="getExistingDirectoryUrl(QWidget*,const QString&amp;,const QUrl&amp;,QFlags&lt;QFileDialog::Option>,const QStringList&amp;)" allow-thread="yes"/>
-    <modify-function signature="getOpenFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" allow-thread="yes">
-      <modify-argument index="return"  pyi-type="Tuple[str, str]">
-        <replace-type modified-type="(fileName, selectedFilter)"/>
-      </modify-argument>
-      <modify-argument index="5">
-        <replace-type modified-type="QString"/>
-        <replace-default-expression with="QString()"/>
-      </modify-argument>
-      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
-    </modify-function>
-    <modify-function signature="getOpenFileNames(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" allow-thread="yes">
-      <modify-argument index="return" pyi-type="Tuple[List[str], str]">
-        <replace-type modified-type="(fileNames, selectedFilter)"/>
-      </modify-argument>
-      <modify-argument index="5">
-        <replace-type modified-type="QString"/>
-        <replace-default-expression with="QString()"/>
-      </modify-argument>
-      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
-    </modify-function>
-
-    <modify-function signature="getOpenFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" allow-thread="yes">
-      <modify-argument index="return" pyi-type="Tuple[PySide6.QtCore.QUrl, str]">
-        <replace-type modified-type="(fileName, selectedFilter)"/>
-      </modify-argument>
-      <modify-argument index="5">
-        <replace-type modified-type="QString"/>
-        <replace-default-expression with="QString()"/>
-      </modify-argument>
-      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
-    </modify-function>
-
-    <modify-function signature="getOpenFileUrls(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" allow-thread="yes">
-      <modify-argument index="return" pyi-type="Tuple[List[PySide6.QtCore.QUrl], str]">
-        <replace-type modified-type="(fileName, selectedFilter)"/>
-      </modify-argument>
-      <modify-argument index="5">
-        <replace-type modified-type="QString"/>
-        <replace-default-expression with="QString()"/>
-      </modify-argument>
-      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
-    </modify-function>
-
-    <modify-function signature="getSaveFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" allow-thread="yes">
-      <modify-argument index="return" pyi-type="Tuple[str, str]">
-        <replace-type modified-type="(fileName, selectedFilter)"/>
-      </modify-argument>
-      <modify-argument index="5">
-        <replace-type modified-type="QString"/>
-        <replace-default-expression with="QString()"/>
-      </modify-argument>
-      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
-    </modify-function>
-
-    <modify-function signature="getSaveFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" allow-thread="yes">
-      <modify-argument index="return" pyi-type="Tuple[PySide6.QtCore.QUrl, str]">
-        <replace-type modified-type="(fileName, selectedFilter)"/>
-      </modify-argument>
-      <modify-argument index="5">
-        <replace-type modified-type="QString"/>
-        <replace-default-expression with="QString()"/>
-      </modify-argument>
-      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
-    </modify-function>
+    <modify-function signature="getOpenFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
+    <modify-function signature="getOpenFileNames(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
+    <modify-function signature="getOpenFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" remove="all"/>
+    <modify-function signature="getOpenFileUrls(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" remove="all"/>
+    <modify-function signature="getSaveFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
+    <modify-function signature="getSaveFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" remove="all"/>
 
   </object-type>
 
@@ -2962,9 +2864,11 @@
 
   <object-type name="QCommandLinkButton"/>
   <!-- FIXME PYSIDE7: Move to QtGui -->
-  <object-type name="QFileSystemModel" polymorphic-id-expression="qobject_cast&lt;QFileSystemModel*&gt;(%B)">
+  <object-type name="QFileSystemModel" polymorphic-id-expression="qobject_cast&lt;QFileSystemModel*&gt;(%B)" generate="no">
     <enum-type name="Roles" python-type="IntEnum"/>
     <enum-type name="Option" flags="Options"/>
+    <modify-function signature="options()const" remove="all"/>
+    <modify-function signature="setOptions(QFlags&lt;QFileSystemModel::Option&gt;)" remove="all"/>
     <modify-function signature="setIconProvider(QAbstractFileIconProvider*)">
       <modify-argument index="1">
         <parent index="this" action="add"/>
@@ -3369,7 +3273,7 @@
   <object-type name="QGraphicsScale"/>
   <object-type name="QGraphicsTransform"/>
   <object-type name="QPanGesture"/>
-  <object-type name="QPinchGesture">
+  <object-type name="QPinchGesture" generate="no">
       <enum-type name="ChangeFlag" flags="ChangeFlags"/>
   </object-type>
 
