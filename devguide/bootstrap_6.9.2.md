@@ -166,32 +166,29 @@ Current active state before pausing:
   - `QQmlEngine::addImageProvider(...)` removed
   - `QQmlEngine::imageProvider(...)` removed
 
-Latest build reading:
+## Applied fixes (2026-03-31)
 
-- the build already gets well past `QtWidgets`
-- `QQmlImageProviderBase` is no longer the active blocker
-- the current hard failure is now in `QtQuick`
-- exact failing surfaces:
-  - `QQuickItem::flags() const`
-  - `QQuickItem::setFlags(...)`
-  - `QQuickRenderTarget::fromOpenGLTexture(...)` with flags
-- exact pattern:
-  - generated wrappers still use `QFlags<QCommandLineOption::Flag>`
-  - Qt expects `QQuickItem::Flags` / `QQuickRenderTarget::Flags`
+The `QtQuick` flag-type bug affects more surfaces than originally identified.
+Root cause: shiboken generates `QFlags<QCommandLineOption::Flag>` instead of the
+correct flag type for any class whose `flags()` method is inherited from a Qt base
+class that uses a different `QFlags<>` specialization.
 
-Exact next task:
+Surfaces removed in `PySide6/QtQuick/typesystem_quick.xml` (commit 13df0bf + b2c736b):
 
-1. patch `QtQuick` for this `6.9.2` line:
-   - remove `QQuickItem::flags() const`
-   - remove `QQuickItem::setFlags(...)`
-   - remove the problematic `QQuickRenderTarget::fromOpenGLTexture(...)` flags overload
-2. rerun:
-   - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
-3. only after `Essentials` closes again:
-   - resume `pyside6-addons-uibcdf`
+- `QQuickItem::flags() const` — `QQuickItem::Flags` expected
+- `QQuickItem::setFlags(...)` — same
+- `QQuickRenderTarget::fromOpenGLTexture(..., Flags)` — `QQuickRenderTarget::Flags` expected
+- `QQuickImageProvider::flags() const` — `QQmlImageProviderBase::Flag` expected
+- `QQuickAsyncImageProvider::flags() const` — same inherited mismatch
 
-What to check first when resuming:
+Build in progress (3rd attempt). If further `flags()` mismatches appear in other
+`QtQuick` subclasses, apply the same `remove="all"` pattern.
 
-1. whether the next failure remains in `QtQuick` or moves further down the build
-2. whether the rebuilt package still installs the Qt runtime under `PySide6_uibcdf/Qt/...`
-3. only after `Essentials` closes again, re-open `pyside6-addons-uibcdf`
+What to check when resuming if the build fails again:
+
+1. Search the log for `error: invalid covariant return type` — that is the canonical
+   pattern for this class of bug.
+2. Apply `<modify-function signature="flags()const" remove="all"/>` to the affected
+   type in `typesystem_quick.xml`.
+3. Re-run `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
+4. Only after Essentials closes: resume `pyside6-addons-uibcdf`.
