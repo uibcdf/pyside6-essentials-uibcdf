@@ -77,6 +77,11 @@
           </modify-argument>
         </modify-function>
 
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type (QFlags<QCommandLineOption::Flag>)
+             for these two functions. Remove them for this standalone-oriented line. -->
+        <modify-function signature="flags()const" remove="all"/>
+        <modify-function signature="^setFlags\(.*\)$" remove="all"/>
+
         <!-- TODO: Find a way to wrap `union ItemChangeData {}` -->
     </object-type>
 
@@ -97,6 +102,9 @@
         <!-- PYSIDE-1726, after qtbase/696d94b132b2f352b5e6b889ad91c2437417fae8,
              the function is defined with dummy types when Vulkan is not present. -->
         <modify-function signature="^fromVulkanImage\(.*$" remove="all"/>
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type (QFlags<QCommandLineOption::Flag>)
+             for the 6-arg fromOpenGLTexture overload (with Flags). Remove it for this line. -->
+        <modify-function signature="^fromOpenGLTexture\(.*Flags.*\)$" remove="all"/>
         <enum-type name="Flag" flags="Flags" since="6.8"/>
     </value-type>
 
@@ -250,6 +258,9 @@
     <suppress-warning text="^signature.*fromVulkanImage.*not found.*$"/>
     <suppress-warning text="^signature.*fromPhysicalDevice.*not found.*$"/>
     <suppress-warning text="^signature.*fromDeviceObjects.*not found.*$"/>
+    <suppress-warning text="^signature.*fromOpenGLTexture.*not found.*$"/>
+    <suppress-warning text="^signature.*QQuickItem.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QQuickItem.*setFlags.*not found.*$"/>
     <suppress-warning text="^Unable to decide type of property:.*QQuickGradient.*Unable to translate type.*QQuickGradient.*Cannot find type entry for.*QQuickGradient.*$"/>
 
 </typesystem>
