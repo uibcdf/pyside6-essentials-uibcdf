@@ -50,7 +50,15 @@
     </value-type>
 
     <object-type name="QQuickTextureFactory"/>
-    <object-type name="QQuickImageProvider"/>
+    <object-type name="QQuickImageProvider">
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type (QFlags<QCommandLineOption::Flag>)
+             instead of QFlags<QQmlImageProviderBase::Flag> for this virtual override. -->
+        <modify-function signature="flags()const" remove="all"/>
+    </object-type>
+    <object-type name="QQuickAsyncImageProvider">
+        <!-- UIBCDF 6.9.2: same flag-type mismatch inherited from QQuickImageProvider. -->
+        <modify-function signature="flags()const" remove="all"/>
+    </object-type>
     <object-type name="QQuickImageResponse"/>
 
     <object-type name="QQuickTransform"/>
@@ -261,6 +269,8 @@
     <suppress-warning text="^signature.*fromOpenGLTexture.*not found.*$"/>
     <suppress-warning text="^signature.*QQuickItem.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QQuickItem.*setFlags.*not found.*$"/>
+    <suppress-warning text="^signature.*QQuickImageProvider.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QQuickAsyncImageProvider.*flags.*not found.*$"/>
     <suppress-warning text="^Unable to decide type of property:.*QQuickGradient.*Unable to translate type.*QQuickGradient.*Cannot find type entry for.*QQuickGradient.*$"/>
 
 </typesystem>
