@@ -242,6 +242,9 @@
         <enum-type name="StateFlag" flags="StateFlags"/>
         <enum-type name="RenderingFlag" flags="RenderingFlags"/>
         <object-type name="RenderState"/>
+        <!-- UIBCDF 6.9.2: RenderingFlags = QFlags<RenderingFlag>; same flag-type mismatch
+             as QQuickItem::flags(). Remove for this standalone-oriented line. -->
+        <modify-function signature="flags()const" remove="all"/>
     </object-type>
     <object-type name="QSGRootNode"/>
     <object-type name="QSGTexture">
@@ -271,6 +274,7 @@
     <suppress-warning text="^signature.*QQuickItem.*setFlags.*not found.*$"/>
     <suppress-warning text="^signature.*QQuickImageProvider.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QQuickAsyncImageProvider.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGRenderNode.*flags.*not found.*$"/>
     <suppress-warning text="^Unable to decide type of property:.*QQuickGradient.*Unable to translate type.*QQuickGradient.*Cannot find type entry for.*QQuickGradient.*$"/>
 
 </typesystem>
