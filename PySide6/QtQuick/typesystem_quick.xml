@@ -181,6 +181,7 @@
     <object-type name="QSGImageNode">
         <enum-type name="TextureCoordinatesTransformFlag" flags="TextureCoordinatesTransformMode"/>
         <!-- UIBCDF 6.9.2: same TextureCoordinatesTransformFlag name collision with QSGSimpleTextureNode. -->
+        <modify-function signature="^textureCoordinatesTransform\(.*\)$" remove="all"/>
         <modify-function signature="^textureCoordinatesTransformMode\(.*\)$" remove="all"/>
         <modify-function signature="^setTextureCoordinatesTransform\(.*\)$" remove="all"/>
     </object-type>
@@ -232,7 +233,9 @@
     <object-type name="QSGSimpleTextureNode">
         <enum-type name="TextureCoordinatesTransformFlag" flags="TextureCoordinatesTransformMode"/>
         <!-- UIBCDF 6.9.2: shiboken confuses QSGSimpleTextureNode::TextureCoordinatesTransformFlag
-             with QSGImageNode::TextureCoordinatesTransformFlag (same enum name, different classes). -->
+             with QSGImageNode::TextureCoordinatesTransformFlag (same enum name, different classes).
+             Both textureCoordinatesTransform() and textureCoordinatesTransformMode() must be removed. -->
+        <modify-function signature="^textureCoordinatesTransform\(.*\)$" remove="all"/>
         <modify-function signature="^textureCoordinatesTransformMode\(.*\)$" remove="all"/>
         <modify-function signature="^setTextureCoordinatesTransform\(.*\)$" remove="all"/>
     </object-type>
@@ -295,10 +298,8 @@
     <suppress-warning text="^signature.*QSGNode.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QSGNode.*setFlag.*not found.*$"/>
     <suppress-warning text="^signature.*QSGNode.*setFlags.*not found.*$"/>
-    <suppress-warning text="^signature.*QSGImageNode.*textureCoordinatesTransformMode.*not found.*$"/>
-    <suppress-warning text="^signature.*QSGImageNode.*setTextureCoordinatesTransform.*not found.*$"/>
-    <suppress-warning text="^signature.*QSGSimpleTextureNode.*textureCoordinatesTransformMode.*not found.*$"/>
-    <suppress-warning text="^signature.*QSGSimpleTextureNode.*setTextureCoordinatesTransform.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGImageNode.*textureCoordinatesTransform.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGSimpleTextureNode.*textureCoordinatesTransform.*not found.*$"/>
     <suppress-warning text="^Unable to decide type of property:.*QQuickGradient.*Unable to translate type.*QQuickGradient.*Cannot find type entry for.*QQuickGradient.*$"/>
 
 </typesystem>
