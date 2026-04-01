@@ -187,6 +187,10 @@
 
     <object-type name="QSGMaterial">
         <enum-type name="Flag" flags="Flags"/>
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type for flags/setFlag/setFlags -->
+        <modify-function signature="flags()const" remove="all"/>
+        <modify-function signature="^setFlag\(.*\)$" remove="all"/>
+        <modify-function signature="^setFlags\(.*\)$" remove="all"/>
     </object-type>
     <object-type name="QSGMaterialShader">
         <enum-type name="Stage"/>
@@ -204,10 +208,10 @@
         <modify-function signature="updateSampledImage(QSGMaterialShader::RenderState&amp;,int,QSGTexture**,QSGMaterial*,QSGMaterial*)" remove="all"/>
         <!-- Private QRhi class -->
         <modify-function signature="setShader(QSGMaterialShader::Stage,QShader)" remove="all"/>
-        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type for flags()const -->
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type for flags/setFlag/setFlags -->
         <modify-function signature="flags()const" remove="all"/>
-        <modify-function signature="setFlag(QSGMaterialShader::Flag,bool)" remove="all"/>
-        <modify-function signature="setFlags(QSGMaterialShader::Flags)" remove="all"/>
+        <modify-function signature="^setFlag\(.*\)$" remove="all"/>
+        <modify-function signature="^setFlags\(.*\)$" remove="all"/>
     </object-type>
     <object-type name="QSGMaterialType"/>
     <object-type name="QSGNinePatchNode"/>
@@ -215,10 +219,10 @@
         <enum-type name="DirtyStateBit" flags="DirtyState"/>
         <enum-type name="Flag" flags="Flags"/>
         <enum-type name="NodeType"/>
-        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type for flags()const -->
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type for flags/setFlag/setFlags -->
         <modify-function signature="flags()const" remove="all"/>
-        <modify-function signature="setFlag(QSGNode::Flag,bool)" remove="all"/>
-        <modify-function signature="setFlags(QSGNode::Flags,bool)" remove="all"/>
+        <modify-function signature="^setFlag\(.*\)$" remove="all"/>
+        <modify-function signature="^setFlags\(.*\)$" remove="all"/>
     </object-type>
     <object-type name="QSGNodeVisitor"/>
 
@@ -282,6 +286,9 @@
     <suppress-warning text="^signature.*QQuickImageProvider.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QQuickAsyncImageProvider.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QSGRenderNode.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGMaterial.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGMaterial.*setFlag.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGMaterial.*setFlags.*not found.*$"/>
     <suppress-warning text="^signature.*QSGMaterialShader.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QSGMaterialShader.*setFlag.*not found.*$"/>
     <suppress-warning text="^signature.*QSGMaterialShader.*setFlags.*not found.*$"/>
