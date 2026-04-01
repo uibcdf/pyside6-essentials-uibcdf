@@ -180,6 +180,9 @@
 
     <object-type name="QSGImageNode">
         <enum-type name="TextureCoordinatesTransformFlag" flags="TextureCoordinatesTransformMode"/>
+        <!-- UIBCDF 6.9.2: same TextureCoordinatesTransformFlag name collision with QSGSimpleTextureNode. -->
+        <modify-function signature="textureCoordinatesTransformMode()const" remove="all"/>
+        <modify-function signature="setTextureCoordinatesTransform(QSGImageNode::TextureCoordinatesTransformMode)" remove="all"/>
     </object-type>
 
     <object-type name="QSGMaterial">
@@ -201,6 +204,10 @@
         <modify-function signature="updateSampledImage(QSGMaterialShader::RenderState&amp;,int,QSGTexture**,QSGMaterial*,QSGMaterial*)" remove="all"/>
         <!-- Private QRhi class -->
         <modify-function signature="setShader(QSGMaterialShader::Stage,QShader)" remove="all"/>
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type for flags()const -->
+        <modify-function signature="flags()const" remove="all"/>
+        <modify-function signature="setFlag(QSGMaterialShader::Flag,bool)" remove="all"/>
+        <modify-function signature="setFlags(QSGMaterialShader::Flags)" remove="all"/>
     </object-type>
     <object-type name="QSGMaterialType"/>
     <object-type name="QSGNinePatchNode"/>
@@ -208,6 +215,10 @@
         <enum-type name="DirtyStateBit" flags="DirtyState"/>
         <enum-type name="Flag" flags="Flags"/>
         <enum-type name="NodeType"/>
+        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type for flags()const -->
+        <modify-function signature="flags()const" remove="all"/>
+        <modify-function signature="setFlag(QSGNode::Flag,bool)" remove="all"/>
+        <modify-function signature="setFlags(QSGNode::Flags,bool)" remove="all"/>
     </object-type>
     <object-type name="QSGNodeVisitor"/>
 
@@ -216,6 +227,10 @@
     <object-type name="QSGSimpleRectNode"/>
     <object-type name="QSGSimpleTextureNode">
         <enum-type name="TextureCoordinatesTransformFlag" flags="TextureCoordinatesTransformMode"/>
+        <!-- UIBCDF 6.9.2: shiboken confuses QSGSimpleTextureNode::TextureCoordinatesTransformFlag
+             with QSGImageNode::TextureCoordinatesTransformFlag (same enum name, different classes). -->
+        <modify-function signature="textureCoordinatesTransformMode()const" remove="all"/>
+        <modify-function signature="setTextureCoordinatesTransform(QSGSimpleTextureNode::TextureCoordinatesTransformMode)" remove="all"/>
     </object-type>
     <object-type name="QSGTextNode" since="6.7">
         <enum-type name="TextStyle"/>
@@ -267,6 +282,16 @@
     <suppress-warning text="^signature.*QQuickImageProvider.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QQuickAsyncImageProvider.*flags.*not found.*$"/>
     <suppress-warning text="^signature.*QSGRenderNode.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGMaterialShader.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGMaterialShader.*setFlag.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGMaterialShader.*setFlags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGNode.*flags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGNode.*setFlag.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGNode.*setFlags.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGImageNode.*textureCoordinatesTransformMode.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGImageNode.*setTextureCoordinatesTransform.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGSimpleTextureNode.*textureCoordinatesTransformMode.*not found.*$"/>
+    <suppress-warning text="^signature.*QSGSimpleTextureNode.*setTextureCoordinatesTransform.*not found.*$"/>
     <suppress-warning text="^Unable to decide type of property:.*QQuickGradient.*Unable to translate type.*QQuickGradient.*Cannot find type entry for.*QQuickGradient.*$"/>
 
 </typesystem>
