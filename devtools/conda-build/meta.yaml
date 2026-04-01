@@ -36,8 +36,8 @@ test:
   commands:
     - test ! -e "$SP_DIR/PySide6/Qt"
     - test -f "$SP_DIR/PySide6_uibcdf/QtCore.abi3.so"
-    - test -f "$SP_DIR/PySide6_uibcdf/libpyside6.abi3.so.6.9"
-    - test -f "$SP_DIR/PySide6_uibcdf/Qt/lib/libQt6Core.so.6"
+    - test -f "$PREFIX/lib/libpyside6.abi3.so.6.9"
+    - test -f "$PREFIX/lib/libQt6Core.so.6"
     - python -c "import PySide6_uibcdf.QtCore; print(PySide6_uibcdf.QtCore.__file__)"
 
 about:
