@@ -23,15 +23,10 @@
 
     <inject-code class="target" position="end" file="../glue/qtquick.cpp" snippet="qtquick"/>
 
-    <object-type name="QQuickAsyncImageProvider">
-        <modify-function signature="requestImageResponse(const QString&amp;,const QSize&amp;)">
-            <modify-argument index="return">
-                <define-ownership class="native" owner="c++"/>
-            </modify-argument>
-        </modify-function>
-        <!-- UIBCDF 6.9.2: flag-type mismatch inherited from QQuickImageProvider. -->
-        <modify-function signature="flags()const" remove="all"/>
-    </object-type>
+    <!-- UIBCDF 6.9.2: QQmlImageProviderBase is generate="no" in QtQml, so its Flag enum
+         is unresolvable by shiboken here. Both subclasses produce an invalid covariant
+         return type for flags(). Mark generate="no" to suppress all wrapper generation. -->
+    <object-type name="QQuickAsyncImageProvider" generate="no"/>
 
     <object-type name="QQuickFramebufferObject">
         <object-type name="Renderer"/>
@@ -52,11 +47,10 @@
     </value-type>
 
     <object-type name="QQuickTextureFactory"/>
-    <object-type name="QQuickImageProvider">
-        <!-- UIBCDF 6.9.2: shiboken generates wrong flag type (QFlags<QCommandLineOption::Flag>)
-             instead of QFlags<QQmlImageProviderBase::Flag> for this virtual override. -->
-        <modify-function signature="flags()const" remove="all"/>
-    </object-type>
+    <!-- UIBCDF 6.9.2: QQmlImageProviderBase is generate="no" in QtQml, so its Flag enum
+         is unresolvable by shiboken here. Both subclasses produce an invalid covariant
+         return type for flags(). Mark generate="no" to suppress all wrapper generation. -->
+    <object-type name="QQuickImageProvider" generate="no"/>
     <object-type name="QQuickImageResponse"/>
 
     <object-type name="QQuickTransform"/>

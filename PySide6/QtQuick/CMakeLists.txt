@@ -18,11 +18,9 @@ set_property(SOURCE ${QtQuick_SRC_UNITY_EXCLUDED_SRC}
 
 set(QtQuick_SRC
 ${QtQuick_SRC_UNITY_EXCLUDED_SRC}
-${QtQuick_GEN_DIR}/qquickasyncimageprovider_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickgraphicsconfiguration_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickgraphicsdevice_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquicktexturefactory_wrapper.cpp
-${QtQuick_GEN_DIR}/qquickimageprovider_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickimageresponse_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquicktransform_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickitem_wrapper.cpp
