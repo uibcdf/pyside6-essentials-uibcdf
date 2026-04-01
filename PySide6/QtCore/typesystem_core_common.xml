@@ -996,12 +996,9 @@
       <include file-name="qtcorehelper.h" location="local"/>
     </extra-includes>
     <enum-type name="IteratorFlag" flags="IteratorFlags"/>
-    <value-type name="DirEntry">
-      <add-function signature="__repr__" return-type="PyObject*">
-          <inject-code class="target" position="beginning" file="../glue/qtcore.cpp"
-                       snippet="qdirlisting-direntry-repr"/>
-      </add-function>
-    </value-type>
+    <!-- UIBCDF 6.9.2: QDirListing itself is generate="no" so it has no Python type.
+         AddTypeCreationFunction("QDirListing", ...) crashes at init. Suppress DirEntry too. -->
+    <value-type name="DirEntry" generate="no"/>
     <add-function signature="__iter__()" return-type="PyObject*">
         <inject-code class="target" position="beginning" file="../glue/qtcore.cpp"
                      snippet="qdirlisting-iter"/>

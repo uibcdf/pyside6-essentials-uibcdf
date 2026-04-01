@@ -67,7 +67,6 @@ ${QtCore_GEN_DIR}/qdatetime_wrapper.cpp
 ${QtCore_GEN_DIR}/qdeadlinetimer_wrapper.cpp
 ${QtCore_GEN_DIR}/qdir_wrapper.cpp
 ${QtCore_GEN_DIR}/qdiriterator_wrapper.cpp
-${QtCore_GEN_DIR}/qdirlisting_direntry_wrapper.cpp
 ${QtCore_GEN_DIR}/qdynamicpropertychangeevent_wrapper.cpp
 ${QtCore_GEN_DIR}/qeasingcurve_wrapper.cpp
 ${QtCore_GEN_DIR}/qelapsedtimer_wrapper.cpp
