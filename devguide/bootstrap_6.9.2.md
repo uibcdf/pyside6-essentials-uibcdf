@@ -166,29 +166,40 @@ Current active state before pausing:
   - `QQmlEngine::addImageProvider(...)` removed
   - `QQmlEngine::imageProvider(...)` removed
 
-## Applied fixes (2026-03-31)
+## Applied fixes (2026-03-31 / 2026-04-01)
 
-The `QtQuick` flag-type bug affects more surfaces than originally identified.
-Root cause: shiboken generates `QFlags<QCommandLineOption::Flag>` instead of the
-correct flag type for any class whose `flags()` method is inherited from a Qt base
-class that uses a different `QFlags<>` specialization.
+The `QtQuick` flag-type bug is pervasive. Two distinct root causes confirmed:
 
-Surfaces removed in `PySide6/QtQuick/typesystem_quick.xml` (commit 13df0bf + b2c736b):
+**Root cause A** — missing base class enum:
+shiboken generates `QFlags<QCommandLineOption::Flag>` when the base class defining
+the flag typedef is `generate="no"` without enum declarations (`QQmlImageProviderBase`).
+Fix: `generate="no"` on the subclass so no C++ wrapper is emitted at all.
+Also remove from `CMakeLists.txt`.
 
-- `QQuickItem::flags() const` — `QQuickItem::Flags` expected
-- `QQuickItem::setFlags(...)` — same
-- `QQuickRenderTarget::fromOpenGLTexture(..., Flags)` — `QQuickRenderTarget::Flags` expected
-- `QQuickImageProvider::flags() const` — `QQmlImageProviderBase::Flag` expected
-- `QQuickAsyncImageProvider::flags() const` — same inherited mismatch
+**Root cause B** — same-named enums across classes:
+shiboken confuses `QFlags<ClassA::SomeName>` with `QFlags<ClassB::SomeName>` when
+two classes declare enums with the same short name (e.g. `Flag`, `TextureCoordinatesTransformFlag`).
+Fix: `remove="all"` on the affected methods with regex signatures.
 
-Build in progress (3rd attempt). If further `flags()` mismatches appear in other
-`QtQuick` subclasses, apply the same `remove="all"` pattern.
+**Key lesson**: `remove="all"` removes the Python binding and the conversion code
+in the `.cpp` wrapper but does NOT prevent C++ virtual override generation in the
+shell header. For virtual methods use `generate="no"` on the class. For non-virtual
+methods `remove="all"` is sufficient.
 
-What to check when resuming if the build fails again:
+Surfaces fixed in `typesystem_quick.xml`:
 
-1. Search the log for `error: invalid covariant return type` — that is the canonical
-   pattern for this class of bug.
-2. Apply `<modify-function signature="flags()const" remove="all"/>` to the affected
-   type in `typesystem_quick.xml`.
-3. Re-run `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
-4. Only after Essentials closes: resume `pyside6-addons-uibcdf`.
+- `QQuickImageProvider` — `generate="no"` (Root A + virtual `flags()`)
+- `QQuickAsyncImageProvider` — `generate="no"` + removed from `CMakeLists.txt` (Root A)
+- `QQuickItem::flags()const`, `setFlags(...)` — `remove="all"` (Root B: `Flag`)
+- `QQuickRenderTarget::fromOpenGLTexture(...,Flags)` — `remove="all"` (Root B)
+- `QSGRenderNode::flags()const` — `remove="all"` (Root B: `RenderingFlag`)
+- `QSGMaterial::flags()const`, `setFlag(...)`, `setFlags(...)` — `remove="all"` (Root B: `Flag`)
+- `QSGMaterialShader::flags()const`, `setFlag(...)`, `setFlags(...)` — `remove="all"` (Root B: `Flag`)
+- `QSGNode::flags()const`, `setFlag(...)`, `setFlags(...)` — `remove="all"` (Root B: `Flag`)
+- `QSGImageNode::textureCoordinatesTransform*` — `remove="all"` (Root B: `TextureCoordinatesTransformFlag`)
+- `QSGSimpleTextureNode::textureCoordinatesTransform*` — `remove="all"` (Root B: same)
+
+**Next step**: run `conda build` with `CPU_COUNT=14`. If a new flag-type error appears:
+1. Search log for `cannot convert 'QFlags<QCommandLineOption::Flag>'` or `invalid covariant return type`.
+2. Identify class and method. If method is virtual → `generate="no"` on class + remove from CMakeLists. If non-virtual → `remove="all"` with regex signature.
+3. Only after Essentials closes: resume `pyside6-addons-uibcdf`.
