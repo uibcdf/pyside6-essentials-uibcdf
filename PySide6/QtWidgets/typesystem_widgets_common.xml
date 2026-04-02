@@ -2466,8 +2466,10 @@
       </modify-argument>
     </modify-function>
 
-    <modify-function signature="getExistingDirectory(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QFileDialog::Option>)" allow-thread="yes"/>
-    <modify-function signature="getExistingDirectoryUrl(QWidget*,const QString&amp;,const QUrl&amp;,QFlags&lt;QFileDialog::Option>,const QStringList&amp;)" allow-thread="yes"/>
+    <!-- QFileDialog::Option is confused with QAbstractFileIconProvider::Option by shiboken;
+         remove all static convenience methods that use QFlags<QFileDialog::Option> -->
+    <modify-function signature="getExistingDirectory(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QFileDialog::Option>)" remove="all"/>
+    <modify-function signature="getExistingDirectoryUrl(QWidget*,const QString&amp;,const QUrl&amp;,QFlags&lt;QFileDialog::Option>,const QStringList&amp;)" remove="all"/>
     <modify-function signature="getOpenFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
     <modify-function signature="getOpenFileNames(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
     <modify-function signature="getOpenFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" remove="all"/>
