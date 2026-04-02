@@ -288,6 +288,60 @@ After a successful build, if test commands like `test -f "$SP_DIR/PySide6_uibcdf
 - test -f "$PREFIX/lib/libQt6Core.so.6"
 ```
 
+## Reflexión arquitectónica: ¿essentials/addons o build-what-you-need?
+
+Esta sección documenta una reflexión surgida durante el desarrollo de 6.9.2 y relevante para el diseño de futuros stacks.
+
+### El problema de la división essentials/addons heredada
+
+La división `pyside6-essentials-uibcdf` / `pyside6-addons-uibcdf` replica la estructura de upstream (Qt Company). Esto tiene lógica si el objetivo es cubrir el mismo territorio que PySide6 estándar. Pero el objetivo real del stack UIBCDF es mucho más concreto:
+
+**molsysviewer standalone necesita exclusivamente:**
+
+| Módulo Python | Para qué |
+|---|---|
+| `PySide6_uibcdf.QtCore` | Señales, QTimer, QThread |
+| `PySide6_uibcdf.QtGui` | Base de QWidget, sin RHI |
+| `PySide6_uibcdf.QtWidgets` | QApplication, QMainWindow |
+| `PySide6_uibcdf.QtNetwork` | Requests internos de WebEngine |
+| `PySide6_uibcdf.QtWebChannel` | Puente Python↔JS con Mol* |
+| `PySide6_uibcdf.QtWebEngineCore` | Motor de rendering HTML/WebGL |
+| `PySide6_uibcdf.QtWebEngineWidgets` | QWebEngineView |
+
+Mol* renderiza con WebGL dentro del motor del browser; el GPU rendering lo gestiona Chromium/Qt WebEngine internamente, **no** los bindings Python de QRhi, QSG, QOpenGL, ni QQuick.
+
+### Errores que hubieran desaparecido con un enfoque minimal
+
+Todos los problemas de compilación en la serie de builds de 6.9.2 relacionados con RHI y Qt Quick son de módulos **que molsysviewer no necesita**:
+
+- `QRhiGraphicsPipeline::Flag` vs `QCommandLineOption::Flag` — RHI no necesario
+- `SBK_QRhiRenderTarget_IDX` indefinido en `qrhiwidget_wrapper.cpp` — RHI no necesario
+- `QQuickRhiItem` / `QQuickRhiItemRenderer` — QtQuick no necesario
+- El bloqueador de QtQuick (razón original del fork `pyside6-essentials-uibcdf`) — QtQuick no necesario
+
+El único error que habría persistido es el bug fundamental en `shiboken6-uibcdf` (prefijo `PySide6.` → `PySide6_uibcdf.` en `Module::get`), que es independiente de los módulos que se compilen.
+
+### Alternativa para 6.10.x: un paquete único minimal
+
+En vez de dos paquetes (essentials + addons), un único paquete `pyside6-uibcdf` que solo compila los 7 módulos de la tabla anterior:
+
+**Ventajas:**
+- Surface de compilación ~5-6x menor (≈200 targets vs ≈1041)
+- Sin errores de shiboken por tipos privados RHI ni QQuick
+- Ciclo de debug más rápido
+- Alineado exactamente con el caso de uso
+
+**Inconvenientes:**
+- Más alejado del packaging estándar de Qt Company
+- Si se añaden features que requieran más módulos Qt/Python, hay que reconstruir
+- Requiere un recipe propio en vez de derivar de upstream
+
+### Decisión para 6.9.2
+
+Se continúa con el enfoque essentials/addons porque los bugs hard ya están resueltos y quedan pocos builds para terminar. No se justifica rediseñar.
+
+**Para 6.10.x**: evaluar el enfoque minimal antes de empezar. Si molsysviewer standalone sigue necesitando solo los 7 módulos de la tabla, el ahorro en tiempo de compilación y mantenimiento es considerable.
+
 ## How to port to 6.10.x
 
 When opening a 6.10.x line, use this checklist in order:
