@@ -222,6 +222,9 @@
             <enum-type name="ColorMaskComponent" flags="ColorMask"/>
             <enum-type name="CullMode"/>
             <enum-type name="PolygonMode"/>
+            <!-- UIBCDF 6.9.2: colorWrite field uses QFlags<ColorMaskComponent> but shiboken
+                 resolves it to QRhiGraphicsPipeline::ColorMask (generate="no"); suppress field -->
+            <modify-field name="colorWrite" remove="true"/>
         </value-type>
         <modify-function signature="updateSampledImage(QSGMaterialShader::RenderState&amp;,int,QSGTexture**,QSGMaterial*,QSGMaterial*)" remove="all"/>
         <!-- Private QRhi class -->
