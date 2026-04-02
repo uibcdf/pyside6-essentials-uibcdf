@@ -2275,7 +2275,7 @@
     </modify-function>
   </object-type>
 
-  <object-type name="QMessageBox" generate="no">
+  <object-type name="QMessageBox">
     <enum-type name="ButtonRole"/>
     <enum-type name="Icon"/>
     <enum-type name="StandardButton" python-type="IntFlag" flags="StandardButtons"/>
@@ -2445,7 +2445,7 @@
     </modify-function>
   </object-type>
 
-  <object-type name="QFileDialog" generate="no">
+  <object-type name="QFileDialog">
     <enum-type name="AcceptMode"/>
     <enum-type name="DialogLabel"/>
     <enum-type name="FileMode"/>
