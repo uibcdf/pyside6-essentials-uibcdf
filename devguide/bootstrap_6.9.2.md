@@ -342,12 +342,53 @@ Se continúa con el enfoque essentials/addons porque los bugs hard ya están res
 
 **Para 6.10.x**: evaluar el enfoque minimal antes de empezar. Si molsysviewer standalone sigue necesitando solo los 7 módulos de la tabla, el ahorro en tiempo de compilación y mantenimiento es considerable.
 
+### Pattern: Module::import prefix mismatch (2026-04-02)
+
+**Symptom:** `import PySide6_uibcdf.QtGui` raises:
+```
+ImportError: could not import module 'PySide6.QtCore'
+```
+even though `import PySide6_uibcdf.QtCore` works.
+
+**Root cause:** `Shiboken::Module::import(moduleName)` in `shiboken6-uibcdf/libshiboken/sbkmodule.cpp`
+is called when a module loads its dependencies. The generated module init passes `"PySide6.QtCore"`.
+`Module::import` calls `PyImport_ImportModule("PySide6.QtCore")` — which fails because our
+package is `PySide6_uibcdf.QtCore`. This is a separate function from `Module::get`; both needed
+the same `"PySide6." → "PySide6_uibcdf."` remap.
+
+**Fix:** In `shiboken6-uibcdf/libshiboken/sbkmodule.cpp`, add the same prefix remap to
+`Module::import` as was added to `Module::get`. See shiboken6-uibcdf devguide (commit 4e60fb6).
+Rebuild shiboken6-uibcdf, then rebuild pyside6-essentials-uibcdf.
+
+### Pattern: RHI types causing compilation failures in QtGui/QtWidgets/QtQuick
+
+**Symptom:** Build fails with errors like:
+```
+'SBK_QRhiRenderTarget_IDX' was not declared in this scope
+'SBK_QRhiTexture_IDX' was not declared in this scope
+conversion from 'QFlags<QRhiGraphicsPipeline::Flag>' to non-scalar type 'QFlags<QCommandLineOption::Flag>'
+```
+
+**Root cause:** Qt 6.6+ added private RHI types to the public API typesystem XML. Shiboken generates
+broken wrappers for these types due to enum type resolution conflicts (multiple classes named `Flag`
+get confused). These types are not needed for molsysviewer.
+
+**Fix (applied in 6.9.2):**
+1. Add `generate="no"` to ALL types in `PySide6/QtGui/typesystem_gui_rhi.xml`
+2. Mark `QRhiWidget` (QtWidgets) and `QQuickRhiItem`/`QQuickRhiItemRenderer` (QtQuick) as `generate="no"` and remove their wrapper .cpp from CMakeLists
+3. Add `<modify-function ... remove="all"/>` for methods in `QQuickWindow`, `QQuickRenderControl`, `QQuickRenderTarget`, `QSGMaterialShader::RenderState`, `QSGMaterialShader::GraphicsPipelineState`, `QSGRenderNode`, `QSGTexture`, `QQuickGraphicsDevice` that return or accept RHI pointer types
+
+**For 6.10.x:** Qt may add new RHI-dependent methods to existing classes. If build fails with
+`SBK_QRhi*_IDX undeclared`, find the class and add `<modify-function ... remove="all"/>` for
+the affected method.
+
 ## How to port to 6.10.x
 
 When opening a 6.10.x line, use this checklist in order:
 
 1. **shiboken6-uibcdf first** — rebuild and test before touching essentials.
-   Confirm `Module::get` remap is still present.
+   Confirm **both** `Module::get` AND `Module::import` remaps are still present
+   in `libshiboken/sbkmodule.cpp`.
 
 2. **Check flag-type bugs again** — they depend on enum naming in Qt headers.
    New Qt versions may add or rename enums. Use the Root A / Root B diagnostic
@@ -357,9 +398,13 @@ When opening a 6.10.x line, use this checklist in order:
    `generate="no"` parent classes. If `conda build` crashes at AddTypeCreationFunction,
    apply the nested-type fix.
 
-4. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
+4. **Check RHI spillover** — Qt may add new methods to QtQuick/QtWidgets classes
+   that return RHI types. Look for `SBK_QRhi*_IDX undeclared` errors and add
+   `<modify-function ... remove="all"/>` for the affected methods.
+
+5. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
    always caused by `Module::get` returning NULL. The fix is always in shiboken6-uibcdf
    unless a different root cause is found.
 
-5. **CPU_COUNT=14** — keep this limit to avoid OOM kills during compilation.
+6. **CPU_COUNT=14** — keep this limit to avoid OOM kills during compilation.
    20+ CPUs × ~2GB per shiboken wrapper = exceeds 32GB RAM + swap.
