@@ -77,9 +77,6 @@ elseif (ENABLE_MAC)
          ${QtGui_GEN_DIR}/qrhimetalinitparams_wrapper.cpp)
 endif()
 
-# UIBCDF: append RHI sources unconditionally (variable was defined but never used)
-list(APPEND QtGui_SRC ${QtGui_SRC_RHI})
-
 set(QtGui_SRC
 ${QtGui_SRC_UNITY_EXCLUDED_SRC}
 ${QtGui_GEN_DIR}/qabstractfileiconprovider_wrapper.cpp
@@ -286,6 +283,9 @@ ${QtGui_GEN_DIR}/qwindowstatechangeevent_wrapper.cpp
 # module is always needed
 ${QtGui_GEN_DIR}/qtgui_module_wrapper.cpp
 )
+
+# UIBCDF: QtGui_SRC_RHI was defined but never appended to QtGui_SRC
+list(APPEND QtGui_SRC ${QtGui_SRC_RHI})
 
 get_property(QtGui_enabled_features TARGET Qt${QT_MAJOR_VERSION}::Gui
              PROPERTY QT_ENABLED_PUBLIC_FEATURES)
