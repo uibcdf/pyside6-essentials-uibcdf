@@ -2275,7 +2275,10 @@
     </modify-function>
   </object-type>
 
-  <object-type name="QMessageBox">
+  <!-- QMessageBox::Option confused with QAbstractFileIconProvider::Option and
+       QMessageBox::StandardButton confused with QDialogButtonBox::StandardButton.
+       Same shiboken enum disambiguation failure as QFileDialog. generate="no". -->
+  <object-type name="QMessageBox" generate="no">
     <enum-type name="ButtonRole"/>
     <enum-type name="Icon"/>
     <enum-type name="StandardButton" python-type="IntFlag" flags="StandardButtons"/>
