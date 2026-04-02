@@ -44,6 +44,8 @@
              the functions are defined with dummy types when Vulkan is not present. -->
         <modify-function signature="^fromPhysicalDevice\(.*$" remove="all"/>
         <modify-function signature="^fromDeviceObjects\(.*$" remove="all"/>
+        <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
+        <modify-function signature="fromRhi(QRhi*)" remove="all"/>
     </value-type>
 
     <object-type name="QQuickTextureFactory"/>
@@ -97,7 +99,11 @@
         <enum-type name="PerformanceHint" flags="PerformanceHints"/>
     </object-type>
 
-    <object-type name="QQuickRenderControl"/>
+    <object-type name="QQuickRenderControl">
+        <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
+        <modify-function signature="rhi()const" remove="all"/>
+        <modify-function signature="commandBuffer()const" remove="all"/>
+    </object-type>
     <value-type name="QQuickRenderTarget">
         <!-- PYSIDE-1726, after qtbase/696d94b132b2f352b5e6b889ad91c2437417fae8,
              the function is defined with dummy types when Vulkan is not present. -->
@@ -206,6 +212,9 @@
         <enum-type name="Flag" flags="Flags"/>
         <value-type name="RenderState">
             <enum-type name="DirtyState" flags="DirtyStates"/>
+            <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
+            <modify-function signature="resourceUpdateBatch()" remove="all"/>
+            <modify-function signature="rhi()" remove="all"/>
         </value-type>
         <value-type name="GraphicsPipelineState">
             <enum-type name="BlendFactor"/>
@@ -267,12 +276,19 @@
         <!-- UIBCDF 6.9.2: RenderingFlags = QFlags<RenderingFlag>; same flag-type mismatch
              as QQuickItem::flags(). Remove for this standalone-oriented line. -->
         <modify-function signature="flags()const" remove="all"/>
+        <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
+        <modify-function signature="renderTarget()const" remove="all"/>
+        <modify-function signature="commandBuffer()const" remove="all"/>
     </object-type>
     <object-type name="QSGRootNode"/>
     <object-type name="QSGTexture">
         <enum-type name="AnisotropyLevel"/>
         <enum-type name="Filtering"/>
         <enum-type name="WrapMode"/>
+        <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
+        <modify-function signature="rhiTexture()const" remove="all"/>
+        <modify-function signature="^removedFromAtlas\(.*\)const$" remove="all"/>
+        <modify-function signature="^commitTextureOperations\(.*\)$" remove="all"/>
     </object-type>
     <object-type name="QSGTextureMaterial"/>
     <object-type name="QSGTextureProvider"/>
