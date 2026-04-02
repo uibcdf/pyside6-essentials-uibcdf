@@ -39,6 +39,9 @@ test:
     - test -f "$PREFIX/lib/libpyside6.abi3.so.6.9"
     - test -f "$PREFIX/lib/libQt6Core.so.6"
     - python -c "import PySide6_uibcdf.QtCore; print(PySide6_uibcdf.QtCore.__file__)"
+    - python -c "import PySide6_uibcdf.QtGui; print(PySide6_uibcdf.QtGui.__file__)"
+    - python -c "import PySide6_uibcdf.QtWidgets; print(PySide6_uibcdf.QtWidgets.__file__)"
+    - python -c "import PySide6_uibcdf.QtNetwork; print(PySide6_uibcdf.QtNetwork.__file__)"
 
 about:
   summary: "Experimental UIBCDF-aligned PySide6 Essentials 6.9.2 package for Linux/Python 3.13."
