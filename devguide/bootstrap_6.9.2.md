@@ -431,9 +431,21 @@ When opening a 6.10.x line, use this checklist in order:
    that return RHI types. Look for `SBK_QRhi*_IDX undeclared` errors and add
    `<modify-function ... remove="all"/>` for the affected methods.
 
-5. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
+5. **Check same-name enum confusion** — shiboken resolves short enum names by
+   searching across all registered types. When two classes share an enum name
+   (e.g. `Option`), shiboken may pick the wrong one. Symptom:
+   ```
+   error: 'ShowDirsOnly' is not a member of 'QAbstractFileIconProvider::Option'
+   error: cannot convert 'QFlags<QAbstractFileIconProvider::Option>' to 'QFlags<QFileDialog::Option>'
+   ```
+   Fix: add `remove="all"` to every method that uses the ambiguous `QFlags<ClassName::Option>`
+   parameter. For `QFileDialog`, this means all static convenience methods
+   (`getOpenFileName`, `getSaveFileName`, `getExistingDirectory`, etc.).
+   Check if Qt adds new `Option` enums in 6.10.x that could trigger the same pattern.
+
+6. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
    always caused by `Module::get` returning NULL. The fix is always in shiboken6-uibcdf
    unless a different root cause is found.
 
-6. **CPU_COUNT=14** — keep this limit to avoid OOM kills during compilation.
+7. **CPU_COUNT=14** — keep this limit to avoid OOM kills during compilation.
    20+ CPUs × ~2GB per shiboken wrapper = exceeds 32GB RAM + swap.
