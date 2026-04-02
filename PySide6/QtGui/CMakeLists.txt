@@ -77,6 +77,9 @@ elseif (ENABLE_MAC)
          ${QtGui_GEN_DIR}/qrhimetalinitparams_wrapper.cpp)
 endif()
 
+# UIBCDF: append RHI sources unconditionally (variable was defined but never used)
+list(APPEND QtGui_SRC ${QtGui_SRC_RHI})
+
 set(QtGui_SRC
 ${QtGui_SRC_UNITY_EXCLUDED_SRC}
 ${QtGui_GEN_DIR}/qabstractfileiconprovider_wrapper.cpp
@@ -301,7 +304,10 @@ if("opengl" IN_LIST QtGui_enabled_features OR "opengles2" IN_LIST QtGui_enabled_
          ${QtGui_GEN_DIR}/qopenglcontextgroup_wrapper.cpp
          ${QtGui_GEN_DIR}/qopenglextrafunctions_wrapper.cpp
          ${QtGui_GEN_DIR}/qopenglfunctions_wrapper.cpp
-         ${QtGui_GEN_DIR}/qopenglcontext_wrapper.cpp)
+         ${QtGui_GEN_DIR}/qopenglcontext_wrapper.cpp
+         # UIBCDF: GLES2 wrappers are generated when OpenGL is available but were missing from sources
+         ${QtGui_GEN_DIR}/qrhigles2initparams_wrapper.cpp
+         ${QtGui_GEN_DIR}/qrhigles2nativehandles_wrapper.cpp)
 else()
     list(APPEND QtGui_DROPPED_ENTRIES
          QOpenGLContext QOpenGLContextGroup QOpenGLPaintDevice
