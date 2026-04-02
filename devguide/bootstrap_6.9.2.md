@@ -102,6 +102,35 @@ And is itself a prerequisite for:
 4. update this repo's version line and recipe pins
 5. re-run the same manifest-driven smoke path before any release attempt
 
+## Versioning and Build Numbers
+
+The `version` field in `meta.yaml` always tracks the upstream Qt-for-Python
+version (e.g. `6.9.2`). It changes only when the upstream version changes.
+
+The `build.number` field is the mechanism for shipping corrections to the same
+upstream version:
+
+- **Bug in the recipe, in patches, or in the C++/typesystem sources** (e.g. a
+  new RHI suppression, a typesystem fix): increment `build.number` by 1, keep
+  `version` as-is.
+- **New upstream version** (e.g. 6.10.x): reset `build.number` to 0 and update
+  `version`.
+
+`conda update` / `mamba update` resolves packages by version first, then by
+build number within the same version, so users will automatically receive the
+corrected build when they run an update.
+
+All three packages in the family (`shiboken6-uibcdf`, `pyside6-essentials-uibcdf`,
+`pyside6-addons-uibcdf`) should be released together with the same build number
+whenever a correction touches the shared runtime (e.g. a `libshiboken` patch
+that affects all three).
+
+Upload to the `uibcdf` channel with:
+
+```bash
+anaconda upload <path-to-package.conda> --user uibcdf --channel uibcdf
+```
+
 ## Things To Keep Stable
 
 - do not mix `Essentials` payloads across family versions
