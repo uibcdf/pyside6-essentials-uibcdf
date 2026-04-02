@@ -284,9 +284,6 @@ ${QtGui_GEN_DIR}/qwindowstatechangeevent_wrapper.cpp
 ${QtGui_GEN_DIR}/qtgui_module_wrapper.cpp
 )
 
-# UIBCDF: QtGui_SRC_RHI was defined but never appended to QtGui_SRC
-list(APPEND QtGui_SRC ${QtGui_SRC_RHI})
-
 get_property(QtGui_enabled_features TARGET Qt${QT_MAJOR_VERSION}::Gui
              PROPERTY QT_ENABLED_PUBLIC_FEATURES)
 
@@ -304,10 +301,7 @@ if("opengl" IN_LIST QtGui_enabled_features OR "opengles2" IN_LIST QtGui_enabled_
          ${QtGui_GEN_DIR}/qopenglcontextgroup_wrapper.cpp
          ${QtGui_GEN_DIR}/qopenglextrafunctions_wrapper.cpp
          ${QtGui_GEN_DIR}/qopenglfunctions_wrapper.cpp
-         ${QtGui_GEN_DIR}/qopenglcontext_wrapper.cpp
-         # UIBCDF: GLES2 wrappers are generated when OpenGL is available but were missing from sources
-         ${QtGui_GEN_DIR}/qrhigles2initparams_wrapper.cpp
-         ${QtGui_GEN_DIR}/qrhigles2nativehandles_wrapper.cpp)
+         ${QtGui_GEN_DIR}/qopenglcontext_wrapper.cpp)
 else()
     list(APPEND QtGui_DROPPED_ENTRIES
          QOpenGLContext QOpenGLContextGroup QOpenGLPaintDevice
