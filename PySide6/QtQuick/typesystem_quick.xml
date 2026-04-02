@@ -85,8 +85,8 @@
         <!-- TODO: Find a way to wrap `union ItemChangeData {}` -->
     </object-type>
 
-    <object-type name="QQuickRhiItemRenderer" since="6.7"/>
-    <object-type name="QQuickRhiItem" since="6.7">
+    <object-type name="QQuickRhiItemRenderer" since="6.7" generate="no"/>
+    <object-type name="QQuickRhiItem" since="6.7" generate="no">
         <enum-type name="TextureFormat"/>
     </object-type>
 

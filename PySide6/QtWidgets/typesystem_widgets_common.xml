@@ -3277,7 +3277,7 @@
       <enum-type name="ChangeFlag" flags="ChangeFlags"/>
   </object-type>
 
-  <object-type name="QRhiWidget" since="6.7">
+  <object-type name="QRhiWidget" since="6.7" generate="no">
       <enum-type name="Api"/>
       <enum-type name="TextureFormat"/>
   </object-type>

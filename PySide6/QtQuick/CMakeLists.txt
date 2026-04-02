@@ -30,8 +30,6 @@ ${QtQuick_GEN_DIR}/qsharedpointer_qquickitemgrabresult_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickpainteditem_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickrendercontrol_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickrendertarget_wrapper.cpp
-${QtQuick_GEN_DIR}/qquickrhiitemrenderer_wrapper.cpp
-${QtQuick_GEN_DIR}/qquickrhiitem_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquicktextdocument_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickview_wrapper.cpp
 ${QtQuick_GEN_DIR}/qquickwindow_wrapper.cpp
