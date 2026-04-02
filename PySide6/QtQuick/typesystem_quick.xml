@@ -134,7 +134,7 @@
         <enum-type name="TextRenderType"/>
         <value-type name="GraphicsStateInfo"/>
         <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
-        <modify-function signature="createTextureFromRhiTexture(QRhiTexture*,QQuickWindow::CreateTextureOptions)const" remove="all"/>
+        <modify-function signature="^createTextureFromRhiTexture\(.*\).*$" remove="all"/>
         <modify-function signature="rhi()const" remove="all"/>
         <modify-function signature="swapChain()const" remove="all"/>
     </object-type>
