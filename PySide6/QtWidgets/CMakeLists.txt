@@ -33,7 +33,6 @@ ${QtWidgets_GEN_DIR}/qdialogbuttonbox_wrapper.cpp
 ${QtWidgets_GEN_DIR}/qdockwidget_wrapper.cpp
 ${QtWidgets_GEN_DIR}/qdoublespinbox_wrapper.cpp
 ${QtWidgets_GEN_DIR}/qerrormessage_wrapper.cpp
-${QtWidgets_GEN_DIR}/qfiledialog_wrapper.cpp
 ${QtWidgets_GEN_DIR}/qfileiconprovider_wrapper.cpp
 ${QtWidgets_GEN_DIR}/qfocusframe_wrapper.cpp
 ${QtWidgets_GEN_DIR}/qfontcombobox_wrapper.cpp

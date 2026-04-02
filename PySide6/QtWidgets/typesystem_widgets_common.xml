@@ -2445,7 +2445,10 @@
     </modify-function>
   </object-type>
 
-  <object-type name="QFileDialog">
+  <!-- QFileDialog::Option is confused with QAbstractFileIconProvider::Option by shiboken
+       across all methods (not just static ones). generate="no" is the only viable fix
+       until a proper shiboken enum disambiguation mechanism is in place. -->
+  <object-type name="QFileDialog" generate="no">
     <enum-type name="AcceptMode"/>
     <enum-type name="DialogLabel"/>
     <enum-type name="FileMode"/>
