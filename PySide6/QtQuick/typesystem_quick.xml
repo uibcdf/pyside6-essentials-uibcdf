@@ -105,6 +105,10 @@
         <!-- UIBCDF 6.9.2: shiboken generates wrong flag type (QFlags<QCommandLineOption::Flag>)
              for the 6-arg fromOpenGLTexture overload (with Flags). Remove it for this line. -->
         <modify-function signature="^fromOpenGLTexture\(.*Flags.*\)$" remove="all"/>
+        <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
+        <modify-function signature="fromRhiRenderTarget(QRhiRenderTarget*)" remove="all"/>
+        <modify-function signature="depthTexture()const" remove="all"/>
+        <modify-function signature="setDepthTexture(QRhiTexture*)" remove="all"/>
         <enum-type name="Flag" flags="Flags" since="6.8"/>
     </value-type>
 
@@ -123,6 +127,10 @@
         <enum-type name="SceneGraphError"/>
         <enum-type name="TextRenderType"/>
         <value-type name="GraphicsStateInfo"/>
+        <!-- UIBCDF 6.9.2: RHI types suppressed (generate="no"); remove methods using them -->
+        <modify-function signature="createTextureFromRhiTexture(QRhiTexture*,QQuickWindow::CreateTextureOptions)const" remove="all"/>
+        <modify-function signature="rhi()const" remove="all"/>
+        <modify-function signature="swapChain()const" remove="all"/>
     </object-type>
 
     <object-type name="QSGBasicGeometryNode">
