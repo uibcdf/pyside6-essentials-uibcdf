@@ -203,3 +203,109 @@ Surfaces fixed in `typesystem_quick.xml`:
 1. Search log for `cannot convert 'QFlags<QCommandLineOption::Flag>'` or `invalid covariant return type`.
 2. Identify class and method. If method is virtual → `generate="no"` on class + remove from CMakeLists. If non-virtual → `remove="all"` with regex signature.
 3. Only after Essentials closes: resume `pyside6-addons-uibcdf`.
+
+## Runtime crash patterns (2026-04-01)
+
+These were discovered after the compilation errors above were resolved. They
+manifest at the `python -c "import PySide6_uibcdf.QtCore"` test step.
+
+### Pattern: `AddTypeCreationFunction` crash with nested type of `generate="no"` parent
+
+**Symptom (build 15):** Segfault inside `Shiboken::Module::AddTypeCreationFunction`
+when registering a nested type whose parent class is `generate="no"`.
+
+**Example:** `QDirListing` is `generate="no"` (no Python type exists for it).
+Marking `QDirListing::DirEntry` as generated (but not `QDirListing`) caused
+shiboken to emit `init_QDirListing_DirEntry` and register it via:
+```c++
+AddTypeCreationFunction(module, "QDirListing", init_QDirListing_DirEntry, "QDirListing.DirEntry");
+```
+This crashes because "QDirListing" has no Python type in the module.
+
+**Fix:** Mark the nested type `generate="no"` too:
+```xml
+<object-type name="QDirListing" since="6.8" generate="no">
+    <value-type name="DirEntry" generate="no"/>
+    ...
+</object-type>
+```
+The corresponding `qdirlisting_direntry_wrapper.cpp` must NOT be in CMakeLists.
+
+**Rule:** If a parent class is `generate="no"`, ALL its nested types must also
+be `generate="no"` — or the generated module init will crash.
+
+### Pattern: `PyTuple_Pack(n=1, NULL)` crash — lazy base class initialization fails
+
+**Symptom (build 16):** Segfault in `PyTuple_Pack` during `PyInit_QtCore`:
+```
+PyTuple_Pack(n=1)           ← crash: arg is NULL
+init_QOperatingSystemVersion  ← calls PyTuple_Pack(1, Module::get(base_IDX))
+libshiboken (lazy incarnate)
+PyObject_GetAttrString        ← triggers lazy init of QOperatingSystemVersion
+init_QOperatingSystemVersionStaticFields
+PyInit_QtCore
+```
+
+**Root cause:** `Shiboken::Module::get(typeStruct)` has a slow path for lazy
+type resolution. It extracts the module name from `typeStruct.fullName` (e.g.
+`"PySide6.QtCore.QOperatingSystemVersionBase"`) and looks it up in `sys.modules`.
+
+The `shiboken6-uibcdf` version of this code was patched to check for the
+`"PySide6_uibcdf."` prefix. But the **generated** fullName strings (from
+typesystem XML `package="PySide6.QtCore"`) still use `"PySide6."`. So the code
+computed `modName = "PySide6"`, found nothing in sys.modules (our package is
+`"PySide6_uibcdf"`), returned NULL, and the NULL was passed to `PyTuple_Pack`.
+
+**Fix:** In `shiboken6-uibcdf/libshiboken/sbkmodule.cpp`, add a remap before the
+`usePySide` check (see shiboken6-uibcdf devguide for the exact patch). This fix
+is in `shiboken6-uibcdf`, not in this repo. Rebuilding shiboken6-uibcdf and then
+pyside6-essentials-uibcdf is required.
+
+**Diagnostic commands:**
+```bash
+# Reproduce the crash:
+python -c "import PySide6_uibcdf.QtCore"
+
+# Get backtrace:
+gdb --batch -ex run -ex bt --args python -c "import PySide6_uibcdf.QtCore"
+
+# Find the crashed address in the .so (from info sharedlibrary base + frame offset):
+# Then disassemble to find the fullName string:
+# x/s <address-of-string>
+```
+
+**When upgrading to 6.10.x:** Re-check that shiboken6-uibcdf's `Module::get`
+still has the `"PySide6."` → `"PySide6_uibcdf."` remap, especially if upstream
+changed `Module::get`. Also verify there are no new nested-type crashes by
+searching `conda build` log for `AddTypeCreationFunction` errors.
+
+### Pattern: wrong test paths in meta.yaml
+
+After a successful build, if test commands like `test -f "$SP_DIR/PySide6_uibcdf/Qt/lib/libQt6Core.so.6"` fail, check the actual install layout. In 6.9.2 the Qt libs land in `$PREFIX/lib/`, not under `$SP_DIR/PySide6_uibcdf/Qt/lib/`. Correct paths:
+```yaml
+- test -f "$SP_DIR/PySide6_uibcdf/QtCore.abi3.so"
+- test -f "$PREFIX/lib/libpyside6.abi3.so.6.9"
+- test -f "$PREFIX/lib/libQt6Core.so.6"
+```
+
+## How to port to 6.10.x
+
+When opening a 6.10.x line, use this checklist in order:
+
+1. **shiboken6-uibcdf first** — rebuild and test before touching essentials.
+   Confirm `Module::get` remap is still present.
+
+2. **Check flag-type bugs again** — they depend on enum naming in Qt headers.
+   New Qt versions may add or rename enums. Use the Root A / Root B diagnostic
+   above to fix any new occurrences.
+
+3. **Check nested `generate="no"` types** — Qt may add new nested types inside
+   `generate="no"` parent classes. If `conda build` crashes at AddTypeCreationFunction,
+   apply the nested-type fix.
+
+4. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
+   always caused by `Module::get` returning NULL. The fix is always in shiboken6-uibcdf
+   unless a different root cause is found.
+
+5. **CPU_COUNT=14** — keep this limit to avoid OOM kills during compilation.
+   20+ CPUs × ~2GB per shiboken wrapper = exceeds 32GB RAM + swap.
