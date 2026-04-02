@@ -432,16 +432,25 @@ When opening a 6.10.x line, use this checklist in order:
    `<modify-function ... remove="all"/>` for the affected methods.
 
 5. **Check same-name enum confusion** — shiboken resolves short enum names by
-   searching across all registered types. When two classes share an enum name
-   (e.g. `Option`), shiboken may pick the wrong one. Symptom:
+   searching across all registered types. When two classes share an enum name,
+   shiboken may pick the wrong one across ALL methods of the class, making
+   `remove="all"` on individual methods insufficient. The only viable fix is
+   `generate="no"` on the entire class.
+
+   Known affected classes in 6.9.2:
+   - `QFileDialog`: `Option` confused with `QAbstractFileIconProvider::Option`
+   - `QMessageBox`: `Option` confused with `QAbstractFileIconProvider::Option`,
+     and `StandardButton` confused with `QDialogButtonBox::StandardButton`
+
+   Symptom pattern:
    ```
-   error: 'ShowDirsOnly' is not a member of 'QAbstractFileIconProvider::Option'
    error: cannot convert 'QFlags<QAbstractFileIconProvider::Option>' to 'QFlags<QFileDialog::Option>'
+   error: cannot convert 'QFlags<QDialogButtonBox::StandardButton>' to 'QFlags<QMessageBox::StandardButton>'
    ```
-   Fix: add `remove="all"` to every method that uses the ambiguous `QFlags<ClassName::Option>`
-   parameter. For `QFileDialog`, this means all static convenience methods
-   (`getOpenFileName`, `getSaveFileName`, `getExistingDirectory`, etc.).
-   Check if Qt adds new `Option` enums in 6.10.x that could trigger the same pattern.
+
+   When upgrading to 6.10.x: check whether new classes with same-named enums
+   appear, and whether Qt resolves the upstream ambiguity (upstream shiboken
+   has an `identify-by-name` mechanism that may help).
 
 6. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
    always caused by `Module::get` returning NULL. The fix is always in shiboken6-uibcdf
