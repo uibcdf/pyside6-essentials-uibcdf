@@ -2275,10 +2275,7 @@
     </modify-function>
   </object-type>
 
-  <!-- QMessageBox::Option confused with QAbstractFileIconProvider::Option and
-       QMessageBox::StandardButton confused with QDialogButtonBox::StandardButton.
-       Same shiboken enum disambiguation failure as QFileDialog. generate="no". -->
-  <object-type name="QMessageBox" generate="no">
+  <object-type name="QMessageBox">
     <enum-type name="ButtonRole"/>
     <enum-type name="Icon"/>
     <enum-type name="StandardButton" python-type="IntFlag" flags="StandardButtons"/>
@@ -2297,16 +2294,28 @@
                      snippet="qmessagebox-open-connect-accept"/>
     </add-function>
     <!-- FIXME PYSIDE-7: Remove deprecated overloads -->
+    <modify-function signature="critical(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
+      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
+    </modify-function>
     <modify-function signature="critical(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
                      allow-thread="yes">
+      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
+    </modify-function>
+    <modify-function signature="information(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
       <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
     </modify-function>
     <modify-function signature="information(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
                      allow-thread="yes">
       <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
     </modify-function>
+    <modify-function signature="question(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
+      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
+    </modify-function>
     <modify-function signature="question(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
                      allow-thread="yes">
+      <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
+    </modify-function>
+    <modify-function signature="warning(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QMessageBox::StandardButton&gt;,QMessageBox::StandardButton)" allow-thread="yes">
       <modify-argument index="1" pyi-type="Optional[PySide6.QtWidgets.QWidget]"/>
     </modify-function>
     <modify-function signature="warning(QWidget*,const QString&amp;,const QString&amp;,QMessageBox::StandardButton,QMessageBox::StandardButton)"
@@ -2448,10 +2457,7 @@
     </modify-function>
   </object-type>
 
-  <!-- QFileDialog::Option is confused with QAbstractFileIconProvider::Option by shiboken
-       across all methods (not just static ones). generate="no" is the only viable fix
-       until a proper shiboken enum disambiguation mechanism is in place. -->
-  <object-type name="QFileDialog" generate="no">
+  <object-type name="QFileDialog">
     <enum-type name="AcceptMode"/>
     <enum-type name="DialogLabel"/>
     <enum-type name="FileMode"/>
@@ -2472,16 +2478,72 @@
       </modify-argument>
     </modify-function>
 
-    <!-- QFileDialog::Option is confused with QAbstractFileIconProvider::Option by shiboken;
-         remove all static convenience methods that use QFlags<QFileDialog::Option> -->
-    <modify-function signature="getExistingDirectory(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QFileDialog::Option>)" remove="all"/>
-    <modify-function signature="getExistingDirectoryUrl(QWidget*,const QString&amp;,const QUrl&amp;,QFlags&lt;QFileDialog::Option>,const QStringList&amp;)" remove="all"/>
-    <modify-function signature="getOpenFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
-    <modify-function signature="getOpenFileNames(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
-    <modify-function signature="getOpenFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" remove="all"/>
-    <modify-function signature="getOpenFileUrls(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" remove="all"/>
-    <modify-function signature="getSaveFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" remove="all"/>
-    <modify-function signature="getSaveFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" remove="all"/>
+    <modify-function signature="getExistingDirectory(QWidget*,const QString&amp;,const QString&amp;,QFlags&lt;QFileDialog::Option>)" allow-thread="yes"/>
+    <modify-function signature="getExistingDirectoryUrl(QWidget*,const QString&amp;,const QUrl&amp;,QFlags&lt;QFileDialog::Option>,const QStringList&amp;)" allow-thread="yes"/>
+    <modify-function signature="getOpenFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" allow-thread="yes">
+      <modify-argument index="return"  pyi-type="Tuple[str, str]">
+        <replace-type modified-type="(fileName, selectedFilter)"/>
+      </modify-argument>
+      <modify-argument index="5">
+        <replace-type modified-type="QString"/>
+        <replace-default-expression with="QString()"/>
+      </modify-argument>
+      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
+    </modify-function>
+    <modify-function signature="getOpenFileNames(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" allow-thread="yes">
+      <modify-argument index="return" pyi-type="Tuple[List[str], str]">
+        <replace-type modified-type="(fileNames, selectedFilter)"/>
+      </modify-argument>
+      <modify-argument index="5">
+        <replace-type modified-type="QString"/>
+        <replace-default-expression with="QString()"/>
+      </modify-argument>
+      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
+    </modify-function>
+
+    <modify-function signature="getOpenFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" allow-thread="yes">
+      <modify-argument index="return" pyi-type="Tuple[PySide6.QtCore.QUrl, str]">
+        <replace-type modified-type="(fileName, selectedFilter)"/>
+      </modify-argument>
+      <modify-argument index="5">
+        <replace-type modified-type="QString"/>
+        <replace-default-expression with="QString()"/>
+      </modify-argument>
+      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
+    </modify-function>
+
+    <modify-function signature="getOpenFileUrls(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" allow-thread="yes">
+      <modify-argument index="return" pyi-type="Tuple[List[PySide6.QtCore.QUrl], str]">
+        <replace-type modified-type="(fileName, selectedFilter)"/>
+      </modify-argument>
+      <modify-argument index="5">
+        <replace-type modified-type="QString"/>
+        <replace-default-expression with="QString()"/>
+      </modify-argument>
+      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
+    </modify-function>
+
+    <modify-function signature="getSaveFileName(QWidget*,const QString&amp;,const QString&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;)" allow-thread="yes">
+      <modify-argument index="return" pyi-type="Tuple[str, str]">
+        <replace-type modified-type="(fileName, selectedFilter)"/>
+      </modify-argument>
+      <modify-argument index="5">
+        <replace-type modified-type="QString"/>
+        <replace-default-expression with="QString()"/>
+      </modify-argument>
+      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
+    </modify-function>
+
+    <modify-function signature="getSaveFileUrl(QWidget*,const QString&amp;,const QUrl&amp;,const QString&amp;,QString*,QFlags&lt;QFileDialog::Option&gt;,const QStringList&amp;)" allow-thread="yes">
+      <modify-argument index="return" pyi-type="Tuple[PySide6.QtCore.QUrl, str]">
+        <replace-type modified-type="(fileName, selectedFilter)"/>
+      </modify-argument>
+      <modify-argument index="5">
+        <replace-type modified-type="QString"/>
+        <replace-default-expression with="QString()"/>
+      </modify-argument>
+      <inject-code class="target" position="end" file="../glue/qtwidgets.cpp" snippet="qfiledialog-return" />
+    </modify-function>
 
   </object-type>
 

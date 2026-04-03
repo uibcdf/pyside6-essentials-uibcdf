@@ -431,16 +431,16 @@ When opening a 6.10.x line, use this checklist in order:
    that return RHI types. Look for `SBK_QRhi*_IDX undeclared` errors and add
    `<modify-function ... remove="all"/>` for the affected methods.
 
-5. **Check same-name enum confusion** — shiboken resolves short enum names by
-   searching across all registered types. When two classes share an enum name,
-   shiboken may pick the wrong one across ALL methods of the class, making
-   `remove="all"` on individual methods insufficient. The only viable fix is
-   `generate="no"` on the entire class.
+5. **Check same-name enum confusion** — shiboken's `findFlagsType` has a
+   "last hope" suffix search on `m_flagsEntries` (a `QMap`, alphabetically
+   ordered). When the typedef-resolved flags name is unqualified (e.g.
+   `QFlags<Option>`), the first alphabetical match wins. Fix: add the
+   conflicting cross-module type to `QtWidgets_dropped_entries` in
+   `PySide6/QtWidgets/CMakeLists.txt`.
 
-   Known affected classes in 6.9.2:
-   - `QFileDialog`: `Option` confused with `QAbstractFileIconProvider::Option`
-   - `QMessageBox`: `Option` confused with `QAbstractFileIconProvider::Option`,
-     and `StandardButton` confused with `QDialogButtonBox::StandardButton`
+   Current `QtWidgets_dropped_entries`:
+   - `QAbstractFileIconProvider.Option` — resolves `QFileDialog::Option` and
+     `QMessageBox::Option` ambiguity (QtGui 'A' < QtWidgets 'F'/'M').
 
    Symptom pattern:
    ```
@@ -448,9 +448,14 @@ When opening a 6.10.x line, use this checklist in order:
    error: cannot convert 'QFlags<QDialogButtonBox::StandardButton>' to 'QFlags<QMessageBox::StandardButton>'
    ```
 
-   When upgrading to 6.10.x: check whether new classes with same-named enums
-   appear, and whether Qt resolves the upstream ambiguity (upstream shiboken
-   has an `identify-by-name` mechanism that may help).
+   `QMessageBox::StandardButton` vs `QDialogButtonBox::StandardButton`: both are
+   QtWidgets enums, so dropping one would break the other. With
+   `QAbstractFileIconProvider.Option` dropped the `Option` conflict is gone;
+   the `StandardButton` flags lookup uses the qualified `originalName` key directly
+   (not the suffix fallback), so it resolves correctly without dropping anything.
+
+   When upgrading to 6.10.x: rerun build with `QAbstractFileIconProvider.Option`
+   in `dropped_entries`. If new cross-module same-name enums appear, add them.
 
 6. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
    always caused by `Module::get` returning NULL. The fix is always in shiboken6-uibcdf
