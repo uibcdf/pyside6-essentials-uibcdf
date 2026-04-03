@@ -213,16 +213,10 @@ set(QtWidgets_libraries pyside6
 
 set(QtWidgets_deps QtGui)
 
-# Drop conflicting type entries so shiboken can disambiguate same-named enums:
-# - QAbstractFileIconProvider::Option (QtGui) conflicts with QFileDialog::Option
-#   and QMessageBox::Option (both QtWidgets) via unqualified "Option" flags lookup.
-set(QtWidgets_dropped_entries QAbstractFileIconProvider.Option)
-
 create_pyside_module(NAME QtWidgets
                      INCLUDE_DIRS QtWidgets_include_dirs
                      LIBRARIES QtWidgets_libraries
                      DEPS QtWidgets_deps
                      TYPESYSTEM_PATH QtWidgets_SOURCE_DIR
                      SOURCES QtWidgets_SRC
-                     DROPPED_ENTRIES QtWidgets_dropped_entries
                      TYPESYSTEM_NAME ${QtWidgets_BINARY_DIR}/typesystem_widgets.xml)
