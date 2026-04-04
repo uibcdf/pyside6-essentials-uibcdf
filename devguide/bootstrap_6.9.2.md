@@ -434,28 +434,32 @@ When opening a 6.10.x line, use this checklist in order:
 5. **Check same-name enum confusion** — shiboken's `findFlagsType` has a
    "last hope" suffix search on `m_flagsEntries` (a `QMap`, alphabetically
    ordered). When the typedef-resolved flags name is unqualified (e.g.
-   `QFlags<Option>`), the first alphabetical match wins. Fix: add the
-   conflicting cross-module type to `QtWidgets_dropped_entries` in
-   `PySide6/QtWidgets/CMakeLists.txt`.
+   `QFlags<Option>`), the first alphabetical match wins.
 
-   Current `QtWidgets_dropped_entries`:
-   - `QAbstractFileIconProvider.Option` — resolves `QFileDialog::Option` and
-     `QMessageBox::Option` ambiguity (QtGui 'A' < QtWidgets 'F'/'M').
+   **This bug is fixed canonically in `shiboken6-uibcdf` build 3** via two
+   patches (see shiboken6-uibcdf devguide, "Enum Disambiguation Fix"):
+   - `ApiExtractor/typedatabase.cpp`: "last hope" uses `endsWith("::" + name)`
+     instead of `endsWith(name)` — prevents compound names like
+     `"CheckIndexOptions"` from matching `"Options"`.
+   - `ApiExtractor/abstractmetabuilder.cpp`: step 6 tries the current class
+     scope and base class scopes before falling through to "last hope" — ensures
+     `QFileDialog::Options` and `QAbstractFileIconProvider::Options` each resolve
+     to their own class.
 
-   Symptom pattern:
+   `DROPPED_ENTRIES` in `PySide6/QtWidgets/CMakeLists.txt` is **no longer needed**
+   as a result of these fixes. `QFileDialog`, `QMessageBox`, and `QFileIconProvider`
+   all build correctly without workarounds.
+
+   Symptom pattern (if the shiboken fix is missing or broken):
    ```
    error: cannot convert 'QFlags<QAbstractFileIconProvider::Option>' to 'QFlags<QFileDialog::Option>'
-   error: cannot convert 'QFlags<QDialogButtonBox::StandardButton>' to 'QFlags<QMessageBox::StandardButton>'
+   invalid covariant return type for 'virtual QFlags<QFileDialog::Option> QFileIconProviderWrapper::options()'
+   error: 'ShowDirsOnly' is not a member of 'QAbstractItemModel::CheckIndexOption'
    ```
 
-   `QMessageBox::StandardButton` vs `QDialogButtonBox::StandardButton`: both are
-   QtWidgets enums, so dropping one would break the other. With
-   `QAbstractFileIconProvider.Option` dropped the `Option` conflict is gone;
-   the `StandardButton` flags lookup uses the qualified `originalName` key directly
-   (not the suffix fallback), so it resolves correctly without dropping anything.
-
-   When upgrading to 6.10.x: rerun build with `QAbstractFileIconProvider.Option`
-   in `dropped_entries`. If new cross-module same-name enums appear, add them.
+   If new same-name enum confusion appears with a 6.10.x build, first verify that
+   both shiboken patches are present. Only if they are present but the problem
+   persists, investigate adding `DROPPED_ENTRIES` as a local workaround.
 
 6. **Run gdb on failed imports** — the `PyTuple_Pack(n=1)` crash pattern is
    always caused by `Module::get` returning NULL. The fix is always in shiboken6-uibcdf
@@ -463,3 +467,84 @@ When opening a 6.10.x line, use this checklist in order:
 
 7. **CPU_COUNT=14** — keep this limit to avoid OOM kills during compilation.
    20+ CPUs × ~2GB per shiboken wrapper = exceeds 32GB RAM + swap.
+
+## QFileDialog and QMessageBox status (2026-04-04)
+
+As of build 3, both classes are fully functional without workarounds:
+
+- `QFileDialog` — all static convenience methods (`getOpenFileName`, etc.) with
+  `allow-thread="yes"` and `inject-code` restored from upstream typesystem.
+- `QMessageBox` — `QFlags<QMessageBox::StandardButton>` overloads for
+  `critical`, `information`, `question`, `warning` restored.
+- `QFileIconProvider` — `options()` / `setOptions()` correctly typed as
+  `QAbstractFileIconProvider::Options`.
+
+No `generate="no"`, no `remove="all"`, no `DROPPED_ENTRIES` for any of these.
+
+The fix was canonical: two patches in `shiboken6-uibcdf` to the type lookup
+machinery. See shiboken6-uibcdf devguide for details.
+
+## Local Build and Upload
+
+See shiboken6-uibcdf devguide for the full workflow. Summary:
+
+### Build (after shiboken6-uibcdf is built locally)
+
+```bash
+cd /path/to/pyside6-essentials-uibcdf
+conda build devtools/conda-build \
+    --channel conda-forge \
+    --channel uibcdf \
+    --channel local
+```
+
+Expected time: ~13 min with CPU_COUNT=14 on a 14-core machine.
+Peak RAM: ~9.4 GB.
+
+### Install locally for testing
+
+```bash
+conda install -n <env> \
+    /path/to/conda-bld/linux-64/pyside6-essentials-uibcdf-6.9.2-*.conda
+```
+
+### Upload
+
+```bash
+anaconda upload \
+    /path/to/conda-bld/linux-64/pyside6-essentials-uibcdf-6.9.2-*.conda \
+    --user uibcdf
+```
+
+## Multi-Python and Multi-Platform
+
+See shiboken6-uibcdf devguide for the full discussion. Notes specific to essentials:
+
+### Multiple Python versions
+
+The typesystem XML patches (RHI suppression, flag-type fixes) are Python-version
+independent — the same XML changes apply for 3.11/3.12/3.13.
+
+The main Python-version-sensitive part is `pep384impl.cpp` in shiboken (handled
+upstream). PySide6 itself uses `Py_LIMITED_API=0x03090000` (Python 3.9+), so
+3.11 and 3.12 should work with the same recipe. Change `python =3.13` to the
+target version in both `meta.yaml` and the build environment.
+
+### macOS
+
+In addition to the `.dylib`/RPATH considerations noted in shiboken devguide:
+
+- The RHI suppression patches (`typesystem_gui_rhi.xml`) are platform-independent.
+- QtQuick flag-type fixes are platform-independent.
+- The `QtWidgets` compilation is the bottleneck (~1000 targets) — plan for longer
+  build times on macOS due to slower Clang link times.
+
+### Windows
+
+In addition to shiboken devguide notes:
+
+- Add `bld.bat` alongside `build.sh`.
+- Test commands in `meta.yaml` use Unix `test -f` — replace with Windows equivalents
+  or use Python: `python -c "import os,sys; assert os.path.exists(...)"`.
+- The `QtWebEngine` build on Windows is known to be fragile upstream. Verify that
+  `qt6-webengine-uibcdf` is available for Windows before attempting addons.
