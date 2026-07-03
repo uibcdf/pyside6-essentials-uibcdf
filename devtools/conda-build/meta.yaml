@@ -6,7 +6,7 @@ source:
   path: ../..
 
 build:
-  number: 3
+  number: 4
 
 requirements:
   build:
@@ -23,12 +23,12 @@ requirements:
     - libglx-devel
     - clangdev
     - llvmdev
-    - shiboken6-uibcdf ==6.9.2 *_3
+    - shiboken6-uibcdf ==6.9.2 *_4
   run:
     - python =3.13
     - qt6-main >=6.9.2,<6.10.0a0
     - libopengl
-    - shiboken6-uibcdf ==6.9.2 *_3
+    - shiboken6-uibcdf ==6.9.2 *_4
     - libgcc
     - libstdcxx
 
