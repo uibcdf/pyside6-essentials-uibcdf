@@ -1,0 +1,4 @@
+
+# Prebuilt Qt/PySide6 binaries from source-build checkpoints — do not commit.
+# (These bloated .git by ~120MB in history; purged 2026-07.)
+package_boundary/
