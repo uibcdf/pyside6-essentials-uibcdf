@@ -6,7 +6,7 @@ export CLANG_INSTALL_DIR="${PREFIX}"
 export C_INCLUDE_PATH="${PREFIX}/include${C_INCLUDE_PATH:+:${C_INCLUDE_PATH}}"
 export CPLUS_INCLUDE_PATH="${PREFIX}/include${CPLUS_INCLUDE_PATH:+:${CPLUS_INCLUDE_PATH}}"
 
-cmake -S "${SRC_DIR}" -B "${SRC_DIR}/build-conda" -G Ninja     -DCMAKE_INSTALL_PREFIX="${PREFIX}"     -DCMAKE_PREFIX_PATH="${PREFIX}"     -DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY     -DPython_EXECUTABLE="${PYTHON}"     -DPYTHON_SITE_PACKAGES="${SP_DIR}"     -DBUILD_TESTS=OFF     -DDISABLE_PYI=ON     -DMODULES='Concurrent;Core;DBus;Designer;ExampleIcons;Gui;Help;Network;OpenGL;OpenGLWidgets;PrintSupport;Qml;Quick;QuickControls2;QuickTest;QuickWidgets;Sql;Svg;SvgWidgets;Test;UiTools;WebChannel;WebSockets;Widgets;Xml'
+cmake -S "${SRC_DIR}" -B "${SRC_DIR}/build-conda" -G Ninja     -DCMAKE_INSTALL_PREFIX="${PREFIX}"     -DCMAKE_PREFIX_PATH="${PREFIX}"     -DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY     -DPython_EXECUTABLE="${PYTHON}"     -DPYTHON_SITE_PACKAGES="${SP_DIR}"     -DBUILD_TESTS=OFF     -DDISABLE_PYI=ON     -DMODULES='Concurrent;Core;DBus;Designer;Gui;Help;Network;OpenGL;OpenGLWidgets;PrintSupport;Qml;Quick;QuickControls2;QuickTest;QuickWidgets;Sql;Svg;SvgWidgets;Test;UiTools;WebChannel;WebSockets;Widgets;Xml'
 
 wrapper="${SRC_DIR}/build-conda/.qfp/bin/shiboken_wrapper.sh"
 if [ -f "${wrapper}" ]; then
