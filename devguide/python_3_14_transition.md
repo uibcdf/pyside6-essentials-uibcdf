@@ -58,10 +58,27 @@ An independent offline Conda environment selected this exact cached artifact
 passed there. This is local Linux evidence, not channel or cross-platform
 admission.
 
+## Python 3.11 regression experiment
+
+On 23 September 2026, a disposable copy of this candidate changed only the
+recipe's Python host/run pins from 3.14 to 3.11 and built against the local
+Shiboken 6.10.1 `py311` artifact. The Linux-64 Conda build completed all
+1,043 steps and its package tests passed, including the existing smoke
+script. The result was
+`pyside6-essentials-uibcdf-6.10.1-py311h3fd9d12_0.conda` (SHA-256
+`9fc9c04856897229dd333300e67649aaa113fac4ef60680e1c03369c800e548a`).
+The package metadata declares `python >=3.11,<3.12.0a0` and
+`python_abi 3.11.* *_cp311`, so this artifact does not establish support
+for 3.12 or 3.13. The experiment has not changed this branch's 3.14 recipe
+and has not been uploaded. Build order, local channels and scratch-space
+lessons are recorded in the
+[Addons family build practices](https://github.com/uibcdf/pyside6-addons-uibcdf/blob/python-3.14-qt-6.10.1/devguide/qt_family_build_practices.md).
+
 ## Remaining gates
 
-1. Build Addons against this Essentials artifact and the same Shiboken/Qt
-   family. Coordinate Positioning and WebEngine before claiming the full
-   MolSysViewer Qt host.
-2. Expand platform and interpreter evidence. Stage the coherent family
-   before any release or promotion to the main Conda label.
+1. The local Addons builds against matching Essentials/Shiboken/Qt artifacts
+   passed for Python 3.14 and the disposable 3.11 experiment. Repeat the
+   integrated MolSysViewer Qt-host gate with exact staged-channel packages.
+2. Expand platform and interpreter evidence, including 3.12 and 3.13. Stage
+   the coherent family before any release or promotion to the main Conda
+   label.
