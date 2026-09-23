@@ -111,13 +111,25 @@ offline five-package installation without canonical PySide6 passed the
 ordinary Addons smoke and local-HTML WebEngine loading under Xvfb. This
 remains local Linux evidence, not staging or cross-platform admission.
 
+The committed recipe also built and passed all 1,043 compilation steps and
+Conda package tests on Linux/Python 3.14 on 2026-09-23 against the revised
+Shiboken `py314` artifact. Its SHA-256 is
+`dee2b2dc0092c50ab1a7bbeba215b793d5c1a2d991b15efc3a0aafcb7f290c1c`.
+Finalized metadata requires `python >=3.14,<3.15.0a0`,
+`python_abi 3.14.* *_cp314`, Qt 6.10.1, and Shiboken 6.10.1. A fresh
+five-package installation without canonical PySide6 passed WebEngine local
+HTML loading. With those same exact files installed into a separate viewer
+test environment, three real Qt transport/window tests and the opt-in full
+molecular render passed under Xvfb. This is local Linux evidence, not a
+staged or public package claim.
+
 ## Remaining gates
 
 1. The local Addons builds against matching Essentials/Shiboken/Qt artifacts
    passed for Python 3.11–3.14 on Linux. Repeat the
    integrated MolSysViewer Qt-host gate with exact staged-channel packages.
-2. Build and test the revised recipe on Python 3.11 and 3.14;
+2. Build and test the revised recipe on Python 3.11;
    inspect finalized runtime constraints and expand to claimed platforms.
-   The revised Python 3.12 and 3.13 cells passed locally.
+   The revised Python 3.12, 3.13, and 3.14 cells passed locally.
    Stage the coherent family before any release or promotion to the main
    Conda label.
