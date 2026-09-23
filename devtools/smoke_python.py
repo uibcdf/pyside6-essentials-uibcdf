@@ -1,6 +1,7 @@
-"""Smoke-test the Python 3.14 / Qt 6.10.1 standalone candidate."""
+"""Smoke-test the selected Python / Qt 6.10.1 standalone candidate."""
 
 import os
+import sys
 
 
 def main():
@@ -33,7 +34,9 @@ def main():
 
     QtCore.QTimer.singleShot(0, app.quit)
     assert app.exec() == 0
-    print("Python 3.14 / Qt 6.10.1 clean-install smoke passed")
+    print(
+        f"Python {sys.version_info.major}.{sys.version_info.minor} / Qt 6.10.1 clean-install smoke passed"
+    )
 
 
 if __name__ == "__main__":

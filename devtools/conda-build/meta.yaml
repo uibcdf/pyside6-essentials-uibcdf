@@ -16,7 +16,7 @@ requirements:
     - ninja
     - pkg-config
   host:
-    - python =3.14
+    - python
     - qt6-main =6.10.1
     - libopengl
     - libgl-devel
@@ -25,7 +25,7 @@ requirements:
     - llvmdev
     - shiboken6-uibcdf =6.10.1
   run:
-    - python =3.14
+    - python
     - qt6-main =6.10.1
     - libopengl
     - shiboken6-uibcdf =6.10.1
@@ -34,7 +34,7 @@ requirements:
 
 test:
   source_files:
-    - devtools/smoke_python_314.py
+    - devtools/smoke_python.py
   commands:
     - test ! -e "$SP_DIR/PySide6/Qt"
     - test -f "$SP_DIR/PySide6_uibcdf/QtCore.abi3.so"
@@ -44,10 +44,10 @@ test:
     - python -c "import PySide6_uibcdf.QtGui; print(PySide6_uibcdf.QtGui.__file__)"
     - python -c "import PySide6_uibcdf.QtWidgets; print(PySide6_uibcdf.QtWidgets.__file__)"
     - python -c "import PySide6_uibcdf.QtNetwork; print(PySide6_uibcdf.QtNetwork.__file__)"
-    - python devtools/smoke_python_314.py
+    - python devtools/smoke_python.py
 
 about:
-  summary: "Experimental UIBCDF-aligned PySide6 Essentials 6.10.1 package for Linux/Python 3.14."
+  summary: "Experimental UIBCDF-aligned PySide6 Essentials 6.10.1 package for Linux."
   license: "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
   description: |
     First experimental conda package boundary for the PySide6 Essentials slice
