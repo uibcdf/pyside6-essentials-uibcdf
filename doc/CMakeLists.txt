@@ -143,7 +143,7 @@ if (FULLDOCSBUILD)
     configure_file("pyside-config.qdocconf.in" "${config_docconf}" @ONLY)
 
     set(global_header "${pyside6_BINARY_DIR}/qdoc.h")
-    file(READ "${pyside6_BINARY_DIR}/pyside6_global.h" docHeaderContents)
+    file(READ "${CMAKE_CURRENT_LIST_DIR}/../PySide6/pyside6_global.h" docHeaderContents)
     file(WRITE ${global_header} "${docHeaderContents}")
 
     set(global_typesystem "${CMAKE_CURRENT_BINARY_DIR}/typesystem_doc.xml")
@@ -221,7 +221,6 @@ if(DOC_OUTPUT_FORMAT STREQUAL "html")
                     ${CMAKE_CURRENT_BINARY_DIR}/../../shiboken6/doc/html
                     ${CMAKE_CURRENT_BINARY_DIR}/html/shiboken6
             COMMENT "Copying Shiboken docs..."
-            DEPENDS "${DOC_DATA_DIR}/webxml/qtcore-index.webxml"
             VERBATIM)
 else()
     if(qhelpgenerator_binary)
@@ -233,7 +232,6 @@ else()
                 COMMAND ${python_executable} ${PATCH_QHP_SCRIPT} -p -v pyside6 ${QHP_FILE}
                 COMMAND "${qhelpgenerator_binary}" ${QHP_FILE}
                 COMMENT "Generating QCH from a QHP file..."
-                DEPENDS "${DOC_DATA_DIR}/webxml/qtcore-index.webxml"
                 VERBATIM
         )
     else()
@@ -268,7 +266,6 @@ add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${DOC_BASE_DIR}/PySide6/Q
                        --additional-documentation=${CMAKE_CURRENT_BINARY_DIR}/${DOC_BASE_DIR}/additionaldocs.lst
                        --inheritance-file=${ENV_INHERITANCE_FILE}
                        ${global_typesystem}
-                   WORKING_DIRECTORY ${${module}_SOURCE_DIR}
                    COMMENT "Running generator to generate documentation...")
 endif()
 

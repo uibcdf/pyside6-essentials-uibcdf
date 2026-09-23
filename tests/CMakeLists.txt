@@ -48,6 +48,10 @@ endmacro()
 if (NOT DISABLE_QtCore AND NOT DISABLE_QtGui AND NOT DISABLE_QtWidgets)
     add_subdirectory(pysidetest)
 endif()
+if (NOT DISABLE_QtAsyncio)
+    add_subdirectory(QtAsyncio)
+endif()
+
 add_subdirectory(registry)
 add_subdirectory(signals)
 add_subdirectory(support)
@@ -68,6 +72,6 @@ foreach(shortname IN LISTS all_module_shortnames)
 endforeach()
 
 #platform specific
-if (ENABLE_MAC)
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_subdirectory(mac)
 endif ()

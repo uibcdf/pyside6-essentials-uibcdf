@@ -1,14 +1,7 @@
-# Devguide
+# Developer guide
 
-This directory records the local packaging and maintenance recipe for pyside6-essentials-uibcdf.
-
-Primary entrypoint:
-
-- [bootstrap_6.9.2.md](bootstrap_6.9.2.md)
-
-Purpose:
-
-- make the 6.9.2 line reproducible without consulting /tmp/molsysviewer-standalone0-j4br6njg.html
-- record where the code came from
-- record why this repo exists inside the provisional UIBCDF Qt-for-Python family
-- record how to approach a future 6.10.x line
+- [Python 3.14 / Qt 6.10.1 transition](python_3_14_transition.md) — current
+  candidate, local evidence, and release gates.
+- [6.9.2 bootstrap](bootstrap_6.9.2.md) — historical rationale and build
+  observations for the published line; consult it for a specific question,
+  not as the current recipe.

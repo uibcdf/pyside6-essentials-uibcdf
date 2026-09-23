@@ -1,12 +1,12 @@
 package:
   name: pyside6-essentials-uibcdf
-  version: "6.9.2"
+  version: "6.10.1"
 
 source:
   path: ../..
 
 build:
-  number: 4
+  number: 0
 
 requirements:
   build:
@@ -16,35 +16,38 @@ requirements:
     - ninja
     - pkg-config
   host:
-    - python =3.13
-    - qt6-main =6.9.2
+    - python =3.14
+    - qt6-main =6.10.1
     - libopengl
     - libgl-devel
     - libglx-devel
     - clangdev
     - llvmdev
-    - shiboken6-uibcdf ==6.9.2 *_4
+    - shiboken6-uibcdf =6.10.1
   run:
-    - python =3.13
-    - qt6-main >=6.9.2,<6.10.0a0
+    - python =3.14
+    - qt6-main =6.10.1
     - libopengl
-    - shiboken6-uibcdf ==6.9.2 *_4
+    - shiboken6-uibcdf =6.10.1
     - libgcc
     - libstdcxx
 
 test:
+  source_files:
+    - devtools/smoke_python_314.py
   commands:
     - test ! -e "$SP_DIR/PySide6/Qt"
     - test -f "$SP_DIR/PySide6_uibcdf/QtCore.abi3.so"
-    - test -f "$PREFIX/lib/libpyside6.abi3.so.6.9"
+    - test -f "$PREFIX/lib/libpyside6.abi3.so.6.10"
     - test -f "$PREFIX/lib/libQt6Core.so.6"
     - python -c "import PySide6_uibcdf.QtCore; print(PySide6_uibcdf.QtCore.__file__)"
     - python -c "import PySide6_uibcdf.QtGui; print(PySide6_uibcdf.QtGui.__file__)"
     - python -c "import PySide6_uibcdf.QtWidgets; print(PySide6_uibcdf.QtWidgets.__file__)"
     - python -c "import PySide6_uibcdf.QtNetwork; print(PySide6_uibcdf.QtNetwork.__file__)"
+    - python devtools/smoke_python_314.py
 
 about:
-  summary: "Experimental UIBCDF-aligned PySide6 Essentials 6.9.2 package for Linux/Python 3.13."
+  summary: "Experimental UIBCDF-aligned PySide6 Essentials 6.10.1 package for Linux/Python 3.14."
   license: "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
   description: |
     First experimental conda package boundary for the PySide6 Essentials slice

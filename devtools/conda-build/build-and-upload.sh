@@ -4,8 +4,9 @@
 # channel (anaconda.org/uibcdf), so users can install it with:
 #     mamba install -c uibcdf -c conda-forge <package>
 #
-# The upstream version stays FIXED (6.9.2). "Newer" is signalled by the recipe's
-# build number (build: number in meta.yaml) — bump it before re-uploading.
+# The package version follows meta.yaml. For another build of the same
+# upstream version, increment the recipe's build number before upload.
+# This script uploads to the main label; do not run it for candidate staging.
 #
 # Run the family in order (each repo has its own build-and-upload.sh):
 #     1. shiboken6-uibcdf
