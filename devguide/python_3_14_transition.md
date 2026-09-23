@@ -97,17 +97,27 @@ artifact. Its SHA-256 is
 `45a398759f04c24e196e6e2ff82388eb1161a0cc83480c85df14be358d9dfcea`.
 The finalized `info/index.json` requires `python >=3.12,<3.13.0a0`,
 `python_abi 3.12.* *_cp312`, `qt6-main 6.10.1.*`, and
-`shiboken6-uibcdf 6.10.1.*`. This verifies one revised-recipe cell,
-not the remaining interpreters, a clean five-package installation, or
-another platform.
+`shiboken6-uibcdf 6.10.1.*`. That build verified the first
+revised-recipe cell, not another platform or staged publication.
+
+On 2026-09-23, the same committed recipe built on Linux/Python 3.13
+with `CPU_COUNT=12` against the revised Shiboken 3.13 local artifact.
+All 1,043 compile steps and Conda package tests passed. The artifact
+`pyside6-essentials-uibcdf-6.10.1-py313h3fd9d12_0.conda` has SHA-256
+`6f63b866862098f8874609260afdc85682b2d93301bd6a44aaa59d916db481db`.
+Finalized metadata requires `python >=3.13,<3.14.0a0`,
+`python_abi 3.13.* *_cp313`, Qt 6.10.1, and Shiboken 6.10.1. An independent
+offline five-package installation without canonical PySide6 passed the
+ordinary Addons smoke and local-HTML WebEngine loading under Xvfb. This
+remains local Linux evidence, not staging or cross-platform admission.
 
 ## Remaining gates
 
 1. The local Addons builds against matching Essentials/Shiboken/Qt artifacts
    passed for Python 3.11–3.14 on Linux. Repeat the
    integrated MolSysViewer Qt-host gate with exact staged-channel packages.
-2. Build and test the revised recipe on Python 3.11, 3.13, and 3.14;
+2. Build and test the revised recipe on Python 3.11 and 3.14;
    inspect finalized runtime constraints and expand to claimed platforms.
-   The revised Python 3.12 cell passed locally.
+   The revised Python 3.12 and 3.13 cells passed locally.
    Stage the coherent family before any release or promotion to the main
    Conda label.
