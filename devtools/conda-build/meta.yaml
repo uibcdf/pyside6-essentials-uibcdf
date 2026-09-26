@@ -31,6 +31,9 @@ requirements:
     - shiboken6-uibcdf =6.10.1
     - libgcc
     - libstdcxx
+  # Canonical pyside6 owns overlapping CMake, plugin and data paths.
+  run_constrained:
+    - pyside6 <0
 
 test:
   source_files:
